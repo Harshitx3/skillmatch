@@ -20,7 +20,7 @@ function Layout({ children }) {
               <Link to="/matches" className="hover:text-indigo-400 transition">Matches</Link>
               <Link to="/notifications" className="hover:text-indigo-400 transition">Notifications</Link>
               <Link to="/profile" className="hover:text-indigo-400 transition">Profile</Link>
-              <button 
+              <button
                 onClick={() => { localStorage.removeItem("token"); window.location.href = "/"; }}
                 className="text-gray-400 hover:text-white transition"
               >
@@ -28,7 +28,10 @@ function Layout({ children }) {
               </button>
             </>
           ) : (
-            <Link to="/" className="px-4 py-2 bg-indigo-600 rounded-lg hover:bg-indigo-700 transition">Login</Link>
+            <>
+              <Link to="/profile" className="hover:text-indigo-400 transition">Profile</Link>
+              <Link to="/" className="px-4 py-2 bg-indigo-600 rounded-lg hover:bg-indigo-700 transition">Login</Link>
+            </>
           )}
         </nav>
       </header>
@@ -42,7 +45,7 @@ export default function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Layout><Landing /></Layout>} />
-        <Route path="/profile" element={<ProtectedRoute><Layout><Profile /></Layout></ProtectedRoute>} />
+        <Route path="/profile" element={<Layout><Profile /></Layout>} />
         <Route path="/swipe" element={<ProtectedRoute><Layout><Swipe /></Layout></ProtectedRoute>} />
         <Route path="/notifications" element={<ProtectedRoute><Layout><Notifications /></Layout></ProtectedRoute>} />
         <Route path="/matches" element={<ProtectedRoute><Layout><Matches /></Layout></ProtectedRoute>} />
