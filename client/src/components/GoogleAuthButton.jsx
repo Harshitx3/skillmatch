@@ -8,7 +8,7 @@ export default function GoogleAuthButton() {
       const { credential } = credentialResponse;
       const { data } = await api.post("/auth/google", { credential });
       localStorage.setItem("token", data.token);
-      window.location.href = "/swipe";
+      window.location.href = "/profile";
     } catch (err) {
       alert(err.response?.data?.error || "Google login failed");
     }
@@ -20,14 +20,14 @@ export default function GoogleAuthButton() {
 
   return (
     <div className="flex justify-center min-h-[44px]">
-        <GoogleLogin
-            onSuccess={handleSuccess}
-            onError={handleError}
-            theme="outline"
-            text="continue_with"
-            shape="pill"
-            width="100%"
-        />
+      <GoogleLogin
+        onSuccess={handleSuccess}
+        onError={handleError}
+        theme="outline"
+        text="continue_with"
+        shape="pill"
+        width="100%"
+      />
     </div>
   );
 }

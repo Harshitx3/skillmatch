@@ -12,7 +12,7 @@ export default function Register({ switchToLogin }) {
     try {
       const { data } = await api.post("/auth/register", { name, email, password });
       localStorage.setItem("token", data.token);
-      window.location.href = "/swipe";
+      window.location.href = "/profile";
     } catch (err) {
       alert(err.response?.data?.error || "Registration failed");
     }

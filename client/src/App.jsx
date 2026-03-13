@@ -5,6 +5,8 @@ import Profile from "./pages/Profile.jsx";
 import Swipe from "./pages/Swipe.jsx";
 import Notifications from "./pages/Notifications.jsx";
 import Matches from "./pages/Matches.jsx";
+import AboutUs from "./pages/AboutUs.jsx";
+import ContactUs from "./pages/ContactUs.jsx";
 
 function Layout({ children }) {
   const token = localStorage.getItem("token");
@@ -29,6 +31,8 @@ function Layout({ children }) {
             </>
           ) : (
             <>
+              <Link to="/about" className="hover:text-indigo-400 transition">About Us</Link>
+              <Link to="/contact" className="hover:text-indigo-400 transition">Contact Us</Link>
               <Link to="/profile" className="hover:text-indigo-400 transition">Profile</Link>
               <Link to="/" className="px-4 py-2 bg-indigo-600 rounded-lg hover:bg-indigo-700 transition">Login</Link>
             </>
@@ -46,6 +50,8 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Layout><Landing /></Layout>} />
         <Route path="/profile" element={<Layout><Profile /></Layout>} />
+        <Route path="/about" element={<Layout><AboutUs /></Layout>} />
+        <Route path="/contact" element={<Layout><ContactUs /></Layout>} />
         <Route path="/swipe" element={<ProtectedRoute><Layout><Swipe /></Layout></ProtectedRoute>} />
         <Route path="/notifications" element={<ProtectedRoute><Layout><Notifications /></Layout></ProtectedRoute>} />
         <Route path="/matches" element={<ProtectedRoute><Layout><Matches /></Layout></ProtectedRoute>} />

@@ -11,10 +11,13 @@ async function start() {
   try {
     mongoose.set("strictQuery", false);
     await mongoose.connect(MONGO_URI);
+    console.log("✅ MongoDB connected successfully");
+
     app.listen(PORT, () => {
-      // no-op
+      console.log(`🚀 Server is running on http://localhost:${PORT}`);
     });
   } catch (err) {
+    console.error("❌ Failed to start server:", err.message);
     process.exit(1);
   }
 }

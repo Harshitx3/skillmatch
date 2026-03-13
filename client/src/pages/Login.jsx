@@ -11,7 +11,7 @@ export default function Login({ switchToRegister }) {
     try {
       const { data } = await api.post("/auth/login", { email, password });
       localStorage.setItem("token", data.token);
-      window.location.href = "/swipe";
+      window.location.href = "/profile";
     } catch (err) {
       alert(err.response?.data?.error || "Login failed");
     }
