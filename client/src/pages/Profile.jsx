@@ -57,14 +57,14 @@ export default function Profile() {
   const avatarSrc = form.avatarUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${form.name || "Felix"}&backgroundColor=ffdfbf`;
 
   return (
-    <div className="min-h-screen bg-[#0f111a] p-4 md:p-8 font-sans text-gray-100 flex justify-center">
+    <div className="min-h-screen bg-[#0f111a] p-3 sm:p-4 md:p-8 font-sans text-gray-100 flex justify-center">
       <div className="w-full max-w-6xl">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-violet-500 mb-2">DevLink Profile</h1>
-          <p className="text-gray-400">Manage your professional presence and connect with other builders.</p>
+        <div className="mb-6 md:mb-8 text-center lg:text-left">
+          <h1 className="text-2xl sm:text-3xl font-bold text-violet-500 mb-2">DevLink Profile</h1>
+          <p className="text-sm sm:text-base text-gray-400">Manage your professional presence and connect with other builders.</p>
         </div>
 
-        <form onSubmit={save} className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <form onSubmit={save} className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
           {/* Left Panel */}
           <div className="lg:col-span-1 border border-gray-800 bg-[#161822] rounded-xl p-6 shadow-xl h-max">
             <div className="flex flex-col items-center mb-6">
@@ -138,8 +138,8 @@ export default function Profile() {
             <div className="space-y-8">
               {/* Basic Information */}
               <section>
-                <h3 className="text-lg font-semibold text-white mb-5">Basic Information</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
+                <h3 className="text-lg font-semibold text-white mb-4 md:mb-5">Basic Information</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5 mb-4 md:mb-5">
                   <div>
                     <label className="block text-xs font-medium text-gray-400 mb-2">Full Name <span className="text-red-500">*</span></label>
                     <input 
@@ -174,8 +174,8 @@ export default function Profile() {
 
               {/* Skills & Connections */}
               <section>
-                <h3 className="text-lg font-semibold text-white mb-5">Skills & Connections</h3>
-                <div className="mb-5">
+                <h3 className="text-lg font-semibold text-white mb-4 md:mb-5">Skills & Connections</h3>
+                <div className="mb-4 md:mb-5">
                   <label className="block text-xs font-medium text-gray-400 mb-2">Professional Skills</label>
                   <div className="w-full px-2 py-1.5 flex flex-wrap gap-2 items-center bg-[#0B0F19] border border-gray-800 rounded-md focus-within:border-violet-500 focus-within:ring-1 focus-within:ring-violet-500 transition-all min-h-[42px]">
                     {skillsList.map(skill => (
@@ -224,7 +224,7 @@ export default function Profile() {
                   </div>
                 </div>
                 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5">
                   <div>
                     <label className="block text-xs font-medium text-gray-400 mb-2">GitHub Username <span className="text-red-500">*</span></label>
                     <input 
@@ -250,7 +250,7 @@ export default function Profile() {
 
               {/* Preferences */}
               <section>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
                   <div>
                     <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4">Looking For <span className="text-red-500">*</span></h3>
                     <div className="space-y-4">
@@ -299,11 +299,11 @@ export default function Profile() {
               </section>
 
               {/* Actions */}
-              <div className="flex items-center justify-end gap-3 pt-4">
-                <button type="button" className="text-sm font-medium text-gray-400 hover:text-white transition-colors px-4 py-2">
+              <div className="flex flex-col sm:flex-row items-center justify-end gap-3 pt-4 border-t border-gray-800/50 mt-6 md:mt-0">
+                <button type="button" className="w-full sm:w-auto text-sm font-medium text-gray-400 hover:text-white transition-colors px-4 py-2 order-2 sm:order-1">
                   Cancel
                 </button>
-                <button type="submit" className="px-6 py-2.5 bg-[#8b5cf6] hover:bg-violet-500 active:bg-violet-600 text-white text-sm font-medium rounded-md transition-colors shadow-lg shadow-violet-500/20">
+                <button type="submit" className="w-full sm:w-auto px-6 py-2.5 bg-[#8b5cf6] hover:bg-violet-500 active:bg-violet-600 text-white text-sm font-medium rounded-md transition-colors shadow-lg shadow-violet-500/20 order-1 sm:order-2">
                   Save Profile
                 </button>
               </div>
