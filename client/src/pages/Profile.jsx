@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import api from "../lib/api.js";
 
 const GithubIcon = () => (
@@ -14,8 +15,10 @@ const LeetCodeIcon = () => (
 );
 
 export default function Profile() {
+  const navigate = useNavigate();
   const [form, setForm] = useState({
     name: "",
+    username: "",
     college: "",
     skills: "",
     bio: "",
@@ -23,17 +26,39 @@ export default function Profile() {
     leetcodeUsername: "",
     lookingFor: "",
     experienceLevel: "",
-    avatarUrl: ""
+    avatar: ""
   });
+  const [isNewUser, setIsNewUser] = useState(false);
+  const [usernameStatus, setUsernameStatus] = useState({ checking: false, available: null, message: "" });
+  const [originalUsername, setOriginalUsername] = useState("");
+  const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
     async function load() {
       try {
-        const me = await api.get("/users", { params: {} });
+        const me = await api.get("/users/me");
         if (me?.data) {
-          setForm(prev => ({ ...prev, ...me.data }));
+          const data = me.data;
+          // Convert skills array to string if needed
+          if (Array.isArray(data.skills)) {
+            data.skills = data.skills.join(", ");
+          }
+          setForm(prev => ({
+            ...prev,
+            ...data,
+            // Ensure avatar is set from the data
+            avatar: data.avatar || prev.avatar
+          }));
+          setOriginalUsername(data.username || "");
+          // Check if profile is incomplete
+          const hasIncompleteProfile = !data.college || !data.bio ||
+            !data.skills || !data.githubUsername ||
+            !data.leetcodeUsername || !data.lookingFor || !data.experienceLevel;
+          setIsNewUser(hasIncompleteProfile);
         }
-      } catch {}
+      } catch (err) {
+        console.error("Error loading profile:", err);
+      }
     }
     load();
   }, []);
@@ -42,23 +67,138 @@ export default function Profile() {
     setForm(prev => ({ ...prev, [k]: v }));
   }
 
+  // Check username availability with debounce
+  useEffect(() => {
+    if (!form.username || form.username === originalUsername) {
+      setUsernameStatus({ checking: false, available: null, message: "" });
+      return;
+    }
+
+    const timeoutId = setTimeout(async () => {
+      if (form.username.length < 3) {
+        setUsernameStatus({ checking: false, available: false, message: "Username must be at least 3 characters" });
+        return;
+      }
+
+      setUsernameStatus({ checking: true, available: null, message: "Checking availability..." });
+
+      try {
+        const { data } = await api.get(`/users/check-username?username=${form.username}`);
+        if (data.available) {
+          setUsernameStatus({ checking: false, available: true, message: "✓ Username available" });
+        } else {
+          setUsernameStatus({ checking: false, available: false, message: "✗ Username already taken" });
+        }
+      } catch {
+        setUsernameStatus({ checking: false, available: false, message: "Error checking username" });
+      }
+    }, 500);
+
+    return () => clearTimeout(timeoutId);
+  }, [form.username, originalUsername]);
+
   async function save(e) {
     e.preventDefault();
-    const payload = { ...form, skills: (form.skills||"").split(",").map(s=>s.trim()).filter(Boolean).join(",") };
+
+    // Prepare skills as array
+    const skillsArray = (form.skills || "").split(",").map(s => s.trim()).filter(Boolean);
+
+    const payload = {
+      name: form.name,
+      username: form.username,
+      college: form.college,
+      skills: skillsArray,
+      bio: form.bio,
+      githubUsername: form.githubUsername,
+      leetcodeUsername: form.leetcodeUsername,
+      lookingFor: form.lookingFor,
+      experienceLevel: form.experienceLevel,
+      avatar: form.avatar // Include avatar URL
+    };
+
     try {
-      await api.put("/users/profile", payload);
-      alert("Saved");
-    } catch {
-      alert("Error saving profile");
+      const response = await api.put("/users/profile", payload);
+
+      // Update local form with saved data
+      if (response.data) {
+        const updatedData = response.data;
+        if (Array.isArray(updatedData.skills)) {
+          updatedData.skills = updatedData.skills.join(", ");
+        }
+        setForm(prev => ({ ...prev, ...updatedData }));
+      }
+
+      alert("Profile saved! You are now discoverable to other users.");
+      setIsNewUser(false);
+    } catch (err) {
+      console.error("Save error:", err);
+      alert(err.response?.data?.error || "Error saving profile");
     }
   }
 
   const skillsList = (form.skills || "").split(',').map(s => s.trim()).filter(Boolean);
-  const avatarSrc = form.avatarUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${form.name || "Felix"}&backgroundColor=ffdfbf`;
+  // Get avatar source - prioritize avatar field, fallback to dicebear
+  const avatarSrc = form.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${form.username || form.name || "User"}&backgroundColor=ffdfbf`;
+
+  // Handle image upload to Cloudinary
+  const handleImageUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      alert('Please select an image file');
+      return;
+    }
+
+    // Validate file size (5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      alert('Image size should be less than 5MB');
+      return;
+    }
+
+    setUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append('image', file);
+
+      const response = await api.post('/upload/profile-image', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      if (response.data.url) {
+        set('avatar', response.data.url);
+        alert('Profile picture uploaded successfully!');
+      }
+    } catch (error) {
+      console.error('Upload error:', error);
+      alert('Failed to upload image. Please try again.');
+    } finally {
+      setUploading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-[#0f111a] p-3 sm:p-4 md:p-8 font-sans text-gray-100 flex justify-center">
       <div className="w-full max-w-6xl">
+        {isNewUser && (
+          <div className="mb-6 bg-gradient-to-r from-violet-600/20 to-purple-600/20 border border-violet-500/30 rounded-xl p-6">
+            <h2 className="text-xl font-bold text-white mb-2">Welcome to DevLink! 🎉</h2>
+            <p className="text-gray-300 mb-4">
+              Complete your profile to start connecting with other developers, or continue as an explorer to browse anonymously.
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => navigate("/discover")}
+                className="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg text-sm font-medium transition"
+              >
+                Continue as Explorer →
+              </button>
+            </div>
+          </div>
+        )}
         <div className="mb-6 md:mb-8 text-center lg:text-left">
           <h1 className="text-2xl sm:text-3xl font-bold text-violet-500 mb-2">DevLink Profile</h1>
           <p className="text-sm sm:text-base text-gray-400">Manage your professional presence and connect with other builders.</p>
@@ -71,24 +211,19 @@ export default function Profile() {
               <div className="relative mb-4 mt-2 group cursor-pointer">
                 <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-[#161822] ring-2 ring-violet-500/30 bg-amber-100 relative">
                   <img src={avatarSrc} alt="avatar" className="w-full h-full object-cover" />
-                  <label className="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
-                    <span className="text-white text-xs font-medium">Upload</span>
-                    <input 
-                      type="file" 
-                      className="hidden" 
+                  {uploading && (
+                    <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
+                      <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    </div>
+                  )}
+                  <label className={`absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer ${uploading ? 'pointer-events-none' : ''}`}>
+                    <span className="text-white text-xs font-medium">{uploading ? 'Uploading...' : 'Upload'}</span>
+                    <input
+                      type="file"
+                      className="hidden"
                       accept="image/*"
-                      onChange={(e) => {
-                        const file = e.target.files?.[0];
-                        if (file) {
-                          // Normally you'd upload the file here and get a URL back
-                          // For now we'll just read it as a local data URL to display it
-                          const reader = new FileReader();
-                          reader.onload = (e) => {
-                            set("avatarUrl", e.target.result);
-                          };
-                          reader.readAsDataURL(file);
-                        }
-                      }}
+                      disabled={uploading}
+                      onChange={handleImageUpload}
                     />
                   </label>
                 </div>
@@ -142,30 +277,48 @@ export default function Profile() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5 mb-4 md:mb-5">
                   <div>
                     <label className="block text-xs font-medium text-gray-400 mb-2">Full Name <span className="text-red-500">*</span></label>
-                    <input 
+                    <input
                       required
-                      className="w-full px-4 py-2 bg-[#0B0F19] border border-gray-800 rounded-md text-sm text-white focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-colors" 
+                      className="w-full px-4 py-2 bg-[#0B0F19] border border-gray-800 rounded-md text-sm text-white focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-colors"
                       placeholder="Alex Rivera"
-                      value={form.name} onChange={e=>set("name", e.target.value)} 
+                      value={form.name} onChange={e => set("name", e.target.value)}
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-gray-400 mb-2">College / University <span className="text-red-500">*</span></label>
-                    <input 
+                    <label className="block text-xs font-medium text-gray-400 mb-2">Username <span className="text-red-500">*</span></label>
+                    <input
                       required
-                      className="w-full px-4 py-2 bg-[#0B0F19] border border-gray-800 rounded-md text-sm text-white focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-colors" 
-                      placeholder="Stanford University"
-                      value={form.college} onChange={e=>set("college", e.target.value)} 
+                      className={`w-full px-4 py-2 bg-[#0B0F19] border rounded-md text-sm text-white focus:outline-none focus:ring-1 transition-colors ${usernameStatus.available === true ? 'border-green-500 focus:border-green-500 focus:ring-green-500' :
+                        usernameStatus.available === false ? 'border-red-500 focus:border-red-500 focus:ring-red-500' :
+                          'border-gray-800 focus:border-violet-500 focus:ring-violet-500'
+                        }`}
+                      placeholder="alexrivera"
+                      value={form.username} onChange={e => set("username", e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ''))}
                     />
+                    <p className={`text-xs mt-1 ${usernameStatus.available === true ? 'text-green-400' :
+                      usernameStatus.available === false ? 'text-red-400' :
+                        'text-gray-500'
+                      }`}>
+                      {usernameStatus.message || "Unique identifier for your profile (letters, numbers, underscores only)"}
+                    </p>
                   </div>
+                </div>
+                <div className="mb-4 md:mb-5">
+                  <label className="block text-xs font-medium text-gray-400 mb-2">College / University <span className="text-red-500">*</span></label>
+                  <input
+                    required
+                    className="w-full px-4 py-2 bg-[#0B0F19] border border-gray-800 rounded-md text-sm text-white focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-colors"
+                    placeholder="Stanford University"
+                    value={form.college} onChange={e => set("college", e.target.value)}
+                  />
                 </div>
                 <div>
                   <label className="block text-xs font-medium text-gray-400 mb-2">Short Bio <span className="text-red-500">*</span></label>
-                  <textarea 
+                  <textarea
                     required
-                    className="w-full px-4 py-3 bg-[#0B0F19] border border-gray-800 rounded-md text-sm text-white focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 h-24 resize-none transition-colors" 
+                    className="w-full px-4 py-3 bg-[#0B0F19] border border-gray-800 rounded-md text-sm text-white focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 h-24 resize-none transition-colors"
                     placeholder="Full-stack developer passionate about building..."
-                    value={form.bio} onChange={e=>set("bio", e.target.value)} 
+                    value={form.bio} onChange={e => set("bio", e.target.value)}
                   />
                 </div>
               </section>
@@ -181,8 +334,8 @@ export default function Profile() {
                     {skillsList.map(skill => (
                       <span key={skill} className="flex items-center gap-1.5 px-2.5 py-1 bg-violet-500/20 text-violet-300 rounded text-xs select-none">
                         {skill}
-                        <button 
-                          type="button" 
+                        <button
+                          type="button"
                           className="hover:text-white focus:outline-none"
                           onClick={() => {
                             const updatedSkills = skillsList.filter(s => s !== skill).join(', ');
@@ -193,7 +346,7 @@ export default function Profile() {
                         </button>
                       </span>
                     ))}
-                    <input 
+                    <input
                       type="text"
                       className="flex-1 bg-transparent border-none text-sm text-white placeholder-gray-500 focus:outline-none min-w-[120px] px-2 py-1"
                       placeholder={skillsList.length === 0 ? "Add skill..." : "Add skill..."}
@@ -223,24 +376,24 @@ export default function Profile() {
                     />
                   </div>
                 </div>
-                
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5">
                   <div>
                     <label className="block text-xs font-medium text-gray-400 mb-2">GitHub Username <span className="text-red-500">*</span></label>
-                    <input 
+                    <input
                       required
-                      className="w-full px-4 py-2 bg-[#0B0F19] border border-gray-800 rounded-md text-sm text-white focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-colors" 
+                      className="w-full px-4 py-2 bg-[#0B0F19] border border-gray-800 rounded-md text-sm text-white focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-colors"
                       placeholder="arivera-dev"
-                      value={form.githubUsername} onChange={e=>set("githubUsername", e.target.value)} 
+                      value={form.githubUsername} onChange={e => set("githubUsername", e.target.value)}
                     />
                   </div>
                   <div>
                     <label className="block text-xs font-medium text-gray-400 mb-2">LeetCode Username <span className="text-red-500">*</span></label>
-                    <input 
+                    <input
                       required
-                      className="w-full px-4 py-2 bg-[#0B0F19] border border-gray-800 rounded-md text-sm text-white focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-colors" 
+                      className="w-full px-4 py-2 bg-[#0B0F19] border border-gray-800 rounded-md text-sm text-white focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-colors"
                       placeholder="arivera"
-                      value={form.leetcodeUsername} onChange={e=>set("leetcodeUsername", e.target.value)} 
+                      value={form.leetcodeUsername} onChange={e => set("leetcodeUsername", e.target.value)}
                     />
                   </div>
                 </div>
@@ -257,13 +410,13 @@ export default function Profile() {
                       {["Hackathon Partner", "Startup Co-Founder", "Practice Partner"].map(option => (
                         <label key={option} className="flex items-center gap-3 cursor-pointer group">
                           <div className="relative flex items-center justify-center w-5 h-5">
-                            <input 
+                            <input
                               required
-                              type="radio" 
+                              type="radio"
                               name="lookingFor"
                               value={option}
                               checked={form.lookingFor === option}
-                              onChange={e=>set("lookingFor", e.target.value)}
+                              onChange={e => set("lookingFor", e.target.value)}
                               className="peer appearance-none w-5 h-5 border border-gray-600 rounded-full checked:border-violet-500 focus:outline-none transition-colors cursor-pointer"
                             />
                             <div className="absolute w-2.5 h-2.5 rounded-full bg-violet-500 scale-0 peer-checked:scale-100 transition-transform pointer-events-none" />
@@ -279,13 +432,13 @@ export default function Profile() {
                       {["Beginner", "Intermediate", "Advanced"].map(option => (
                         <label key={option} className="flex items-center gap-3 cursor-pointer group">
                           <div className="relative flex items-center justify-center w-5 h-5">
-                            <input 
+                            <input
                               required
-                              type="radio" 
+                              type="radio"
                               name="experienceLevel"
                               value={option}
                               checked={form.experienceLevel === option}
-                              onChange={e=>set("experienceLevel", e.target.value)}
+                              onChange={e => set("experienceLevel", e.target.value)}
                               className="peer appearance-none w-5 h-5 border border-gray-600 rounded-full checked:border-violet-500 focus:outline-none transition-colors cursor-pointer"
                             />
                             <div className="absolute w-2.5 h-2.5 rounded-full bg-violet-500 scale-0 peer-checked:scale-100 transition-transform pointer-events-none" />

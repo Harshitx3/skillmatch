@@ -6,6 +6,9 @@ import authRoutes from "./src/routes/authRoutes.js";
 import userRoutes from "./src/routes/userRoutes.js";
 import requestRoutes from "./src/routes/requestRoutes.js";
 import matchRoutes from "./src/routes/matchRoutes.js";
+import uploadRoutes from "./src/routes/uploadRoutes.js";
+import eventRoutes from "./src/routes/eventRoutes.js";
+import battleRoutes from "./src/routes/battleRoutes.js";
 
 dotenv.config();
 
@@ -23,6 +26,9 @@ app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/requests", requestRoutes);
 app.use("/api/matches", matchRoutes);
+app.use("/api/upload", uploadRoutes);
+app.use("/api/events", eventRoutes);
+app.use("/api/battles", battleRoutes);
 
 app.use((req, res) => {
   res.status(404).json({ error: "Not found" });

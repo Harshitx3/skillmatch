@@ -8,7 +8,12 @@ export default function GoogleAuthButton() {
       const { credential } = credentialResponse;
       const { data } = await api.post("/auth/google", { credential });
       localStorage.setItem("token", data.token);
-      window.location.href = "/profile";
+      // Redirect based on profile completion
+      if (data.profileComplete) {
+        window.location.href = "/swipe";
+      } else {
+        window.location.href = "/profile";
+      }
     } catch (err) {
       alert(err.response?.data?.error || "Google login failed");
     }

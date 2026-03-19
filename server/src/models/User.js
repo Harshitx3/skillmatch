@@ -4,6 +4,7 @@ import bcrypt from "bcryptjs";
 const userSchema = new mongoose.Schema(
   {
     name: { type: String, required: true },
+    username: { type: String, unique: true, sparse: true, lowercase: true, index: true },
     email: { type: String, required: true, unique: true, lowercase: true, index: true },
     password: { type: String, select: false },
     googleId: { type: String, unique: true, sparse: true },
@@ -15,6 +16,7 @@ const userSchema = new mongoose.Schema(
     leetcodeUsername: { type: String },
     lookingFor: { type: String, enum: ["hackathon", "startup", "practice"] },
     experienceLevel: { type: String },
+    isAdmin: { type: Boolean, default: false },
     createdAt: { type: Date, default: Date.now }
   },
   { versionKey: false }

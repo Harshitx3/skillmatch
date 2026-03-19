@@ -12,6 +12,7 @@ export default function Register({ switchToLogin }) {
     try {
       const { data } = await api.post("/auth/register", { name, email, password });
       localStorage.setItem("token", data.token);
+      // New users always need to complete profile
       window.location.href = "/profile";
     } catch (err) {
       alert(err.response?.data?.error || "Registration failed");

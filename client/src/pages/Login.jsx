@@ -11,7 +11,20 @@ export default function Login({ switchToRegister }) {
     try {
       const { data } = await api.post("/auth/login", { email, password });
       localStorage.setItem("token", data.token);
-      window.location.href = "/profile";
+      // Store admin status
+      if (data.user?.isAdmin) {
+        localStorage.setItem("isAdmin", "true");
+      } else {
+        localStorage.removeItem("isAdmin");
+      }
+      // Redirect based on admin or profile completion
+      if (data.user?.isAdmin) {
+        window.location.href = "/admin/events";
+      } else if (data.profileComplete) {
+        window.location.href = "/discover";
+      } else {
+        window.location.href = "/profile";
+      }
     } catch (err) {
       alert(err.response?.data?.error || "Login failed");
     }
@@ -48,7 +61,7 @@ export default function Login({ switchToRegister }) {
           type="submit"
           className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl transition duration-300 shadow-lg shadow-indigo-500/20"
         >
-          Login
+          Go In
         </button>
       </form>
 
