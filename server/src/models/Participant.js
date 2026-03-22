@@ -4,6 +4,7 @@ const participantSchema = new mongoose.Schema({
     battleId: { type: mongoose.Schema.Types.ObjectId, ref: "Battle", required: true },
     userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
     joinedAt: { type: Date, default: Date.now },
+    completedQuestions: [{ type: Number }], // array of question indices
     completed: { type: Boolean, default: false },
     completedAt: { type: Date },
 }, { timestamps: false });

@@ -9,6 +9,8 @@ const eventSchema = new mongoose.Schema({
     location: { type: String, default: "" },
     registrationLink: { type: String, default: "" },
     teamSize: { type: Number, default: 1 },
+    image: { type: String, default: "" },
+    price: { type: String, enum: ["Free", "Paid"], default: "Free" },
     createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
     status: { type: String, enum: ["pending", "approved", "rejected"], default: "pending" },
 }, { timestamps: true });

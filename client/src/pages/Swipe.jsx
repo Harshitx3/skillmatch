@@ -22,7 +22,15 @@ export default function Swipe() {
     if (filters.experienceLevel) params.experienceLevel = filters.experienceLevel;
     if (filters.lookingFor) params.lookingFor = filters.lookingFor;
     const { data } = await api.get("/users", { params });
-    setUsers(data);
+    
+    // Refresh current matches and sent requests to filter properly
+    const matchesData = await loadMatches();
+    const sentData = await loadSentRequests();
+    
+    // Filter out already sent/matched users to avoid duplicates in swiping
+    const availableUsers = data.filter(u => !sentData.has(u._id) && !matchesData.has(u._id));
+    
+    setUsers(availableUsers);
     setCurrentIndex(0);
   }
 
@@ -42,7 +50,8 @@ export default function Swipe() {
         data.filter(r => r.status === "pending").map(r => r.toUser.toString())
       );
       setSentRequests(pendingIds);
-    } catch { }
+      return pendingIds;
+    } catch { return new Set(); }
   }
 
   async function loadMatches() {
@@ -50,7 +59,8 @@ export default function Swipe() {
       const { data } = await api.get("/matches");
       const matchIds = new Set(data.map(m => m._id.toString()));
       setMatches(matchIds);
-    } catch { }
+      return matchIds;
+    } catch { return new Set(); }
   }
 
   useEffect(() => {
@@ -64,7 +74,6 @@ export default function Swipe() {
     if (currentIndex >= users.length) return;
     const user = users[currentIndex];
     if (!user || !user._id) {
-      console.error("Invalid user data");
       nextCard();
       return;
     }
@@ -84,15 +93,8 @@ export default function Swipe() {
     }
 
     try {
-      const response = await api.post("/requests", { toUser: user._id });
-      // Add to sent requests
+      await api.post("/requests", { toUser: user._id });
       setSentRequests(prev => new Set([...prev, user._id]));
-
-      // Check if it was a resend (rejected -> pending)
-      if (response.data && response.data.status === "pending") {
-        // Could show a "Request resent" message
-        console.log("Request sent successfully");
-      }
     } catch (err) {
       console.error("Like error:", err.response?.data?.error || err.message);
       const errorMsg = err.response?.data?.error || "";
@@ -435,37 +437,59 @@ function UserCard({ user, isRequestSent, isMatched }) {
           )}
         </div>
 
-        {/* Social Links */}
-        <div className="flex gap-3 sm:gap-4 mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-gray-800">
-          {user?.githubUsername && (
-            <a
-              href={`https://github.com/${user.githubUsername}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm text-gray-400 hover:text-white transition"
-              onClick={e => e.stopPropagation()}
-            >
-              <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
-              </svg>
-              GitHub
-            </a>
-          )}
-          {user?.leetcodeUsername && (
-            <a
-              href={`https://leetcode.com/${user.leetcodeUsername}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm text-gray-400 hover:text-white transition"
-              onClick={e => e.stopPropagation()}
-            >
-              <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M13.483 0a1.374 1.374 0 0 0-.961.438L7.116 6.226l-3.854 4.126a5.266 5.266 0 0 0-1.209 2.104 5.35 5.35 0 0 0-.125.513 5.527 5.527 0 0 0 .062 2.362 5.83 5.83 0 0 0 .349 1.017 5.938 5.938 0 0 0 1.271 1.818l4.277 4.193.039.038c2.248 2.165 5.852 2.133 8.063-.074l2.396-2.392c.54-.54.54-1.414.003-1.955a1.378 1.378 0 0 0-1.951-.003l-2.396 2.392a3.021 3.021 0 0 1-4.205.038l-.02-.019-4.276-4.193c-.652-.64-.972-1.469-.948-2.263a2.68 2.68 0 0 1 .066-.523 2.545 2.545 0 0 1 .619-1.164L9.13 8.028c.693-.693 1.814-.693 2.508 0 .434.433.618 1.025.551 1.61a1.68 1.68 0 0 1-.071.333 1.742 1.742 0 0 1-.559.995l-2.095 2.095a.489.489 0 0 0-.117.289.49.49 0 0 0 .146.35.498.498 0 0 0 .697 0l2.096-2.095a2.726 2.726 0 0 0 .873-1.563 2.72 2.72 0 0 0-.116-1.147 2.726 2.726 0 0 0-.961-1.405c-.937-.936-2.246-1.139-3.349-.609a3.39 3.39 0 0 0-.471.271l-4.276-4.193a5.217 5.217 0 0 0-1.112-1.59 5.274 5.274 0 0 0-1.658-1.058A5.319 5.319 0 0 0 0 7.116v9.768c0 .759.157 1.5.465 2.195a5.358 5.358 0 0 0 1.282 1.801l5.433 5.433c.525.524 1.226.813 1.972.813h7.136c.746 0 1.447-.289 1.972-.813l5.433-5.433a5.358 5.358 0 0 0 1.282-1.801 5.403 5.403 0 0 0 .465-2.195V7.116a5.319 5.319 0 0 0-1.548-3.742 5.274 5.274 0 0 0-1.658-1.058A5.266 5.266 0 0 0 21.884 2.1l-3.854-4.126A1.374 1.374 0 0 0 16.517 0h-3.034z" />
-              </svg>
-              LeetCode
-            </a>
-          )}
-        </div>
+        {/* Social Links - Only show if matched */}
+        {isMatched && (
+          <div className="flex gap-3 sm:gap-4 mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-gray-800 animate-fade-in">
+            {user?.email && (
+              <a
+                href={`mailto:${user.email}`}
+                className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm text-gray-400 hover:text-white transition group/link"
+                onClick={e => e.stopPropagation()}
+              >
+                <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+                <span className="truncate max-w-[100px] sm:max-w-none">Email</span>
+              </a>
+            )}
+            {user?.githubUsername && (
+              <a
+                href={`https://github.com/${user.githubUsername}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm text-gray-400 hover:text-white transition"
+                onClick={e => e.stopPropagation()}
+              >
+                <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
+                </svg>
+                GitHub
+              </a>
+            )}
+            {user?.leetcodeUsername && (
+              <a
+                href={`https://leetcode.com/${user.leetcodeUsername}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm text-gray-400 hover:text-white transition"
+                onClick={e => e.stopPropagation()}
+              >
+                <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M13.483 0a1.374 1.374 0 0 0-.961.438L7.116 6.226l-3.854 4.126a5.266 5.266 0 0 0-1.209 2.104 5.35 5.35 0 0 0-.125.513 5.527 5.527 0 0 0 .062 2.362 5.83 5.83 0 0 0 .349 1.017 5.938 5.938 0 0 0 1.271 1.818l4.277 4.193.039.038c2.248 2.165 5.852 2.133 8.063-.074l2.396-2.392c.54-.54.54-1.414.003-1.955a1.378 1.378 0 0 0-1.951-.003l-2.396 2.392a3.021 3.021 0 0 1-4.205.038l-.02-.019-4.276-4.193c-.652-.64-.972-1.469-.948-2.263a2.68 2.68 0 0 1 .066-.523 2.545 2.545 0 0 1 .619-1.164L9.13 8.028c.693-.693 1.814-.693 2.508 0 .434.433.618 1.025.551 1.61a1.68 1.68 0 0 1-.071.333 1.742 1.742 0 0 1-.559.995l-2.095 2.095a.489.489 0 0 0-.117.289.49.49 0 0 0 .146.35.498.498 0 0 0 .697 0l2.096-2.095a2.726 2.726 0 0 0 .873-1.563 2.72 2.72 0 0 0-.116-1.147 2.726 2.726 0 0 0-.961-1.405c-.937-.936-2.246-1.139-3.349-.609a3.39 3.39 0 0 0-.471.271l-4.276-4.193a5.217 5.217 0 0 0-1.112-1.59 5.274 5.274 0 0 0-1.658-1.058A5.319 5.319 0 0 0 0 7.116v9.768c0 .759.157 1.5.465 2.195a5.358 5.358 0 0 0 1.282 1.801l5.433 5.433c.525.524 1.226.813 1.972.813h7.136c.746 0 1.447-.289 1.972-.813l5.433-5.433a5.358 5.358 0 0 0 1.282-1.801 5.403 5.403 0 0 0 .465-2.195V7.116a5.319 5.319 0 0 0-1.548-3.742 5.274 5.274 0 0 0-1.658-1.058A5.266 5.266 0 0 0 21.884 2.1l-3.854-4.126A1.374 1.374 0 0 0 16.517 0h-3.034z" />
+                </svg>
+                LeetCode
+              </a>
+            )}
+          </div>
+        )}
+
+        {!isMatched && (
+          <div className="mt-4 pt-4 border-t border-gray-800 text-center">
+            <p className="text-[10px] uppercase tracking-widest text-gray-500 font-bold">
+              Match to unlock contact info
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );

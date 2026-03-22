@@ -10,6 +10,12 @@ const MODE_COLORS = {
 export default function Hackathons() {
     const [events, setEvents] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [searchTerm, setSearchTerm] = useState("");
+    const [filterType, setFilterType] = useState("All");
+    const [filterMode, setFilterMode] = useState("All");
+    const [filterPrice, setFilterPrice] = useState("All");
+    const [showFilters, setShowFilters] = useState(false);
+    const [selectedEvent, setSelectedEvent] = useState(null);
     const navigate = useNavigate();
     const token = localStorage.getItem("token");
 
@@ -23,6 +29,25 @@ export default function Hackathons() {
         }
         load();
     }, []);
+
+    const filteredEvents = events.filter(ev => {
+        const matchesSearch = ev.title.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesType = filterType === "All" || ev.type === filterType;
+        const matchesMode = filterMode === "All" || ev.mode === filterMode;
+        const matchesPrice = filterPrice === "All" || ev.price === filterPrice;
+        return matchesSearch && matchesType && matchesMode && matchesPrice;
+    });
+
+    const types = ["All", ...new Set([
+        "Hackathon",
+        "AI",
+        "Web Development",
+        "App Development",
+        "Blockchain",
+        "Cybersecurity",
+        "Open for All",
+        ...events.map(e => e.type).filter(Boolean)
+    ])];
 
     function formatDate(dateStr) {
         return new Date(dateStr).toLocaleDateString("en-IN", {
@@ -75,6 +100,100 @@ export default function Hackathons() {
                 )}
             </div>
 
+            {/* Search and Filter Button */}
+            <div className="flex flex-col md:flex-row gap-4 mb-4">
+                <div className="relative flex-1">
+                    <input
+                        type="text"
+                        placeholder="Search hackathons..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="w-full bg-gray-900 border border-gray-700 rounded-lg px-10 py-2.5 text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 transition"
+                    />
+                    <svg className="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                </div>
+                <button
+                    onClick={() => setShowFilters(!showFilters)}
+                    className={`flex items-center justify-center gap-2 px-6 py-2.5 rounded-lg border transition font-medium ${showFilters ? "bg-indigo-600 border-indigo-500 text-white" : "bg-gray-900 border-gray-700 text-gray-400 hover:border-gray-600"}`}
+                >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+                    </svg>
+                    Filters
+                </button>
+            </div>
+
+            {/* Filter Panel */}
+            {showFilters && (
+                <div className="mb-8 p-6 bg-gray-900/50 border border-gray-800 rounded-2xl animate-fade-in">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                        {/* Type Filter */}
+                        <div>
+                            <label className="block text-xs font-bold uppercase tracking-widest text-gray-500 mb-3">Event Type</label>
+                            <div className="flex flex-wrap gap-2">
+                                {types.map(t => (
+                                    <button
+                                        key={t}
+                                        onClick={() => setFilterType(t)}
+                                        className={`px-3 py-1.5 rounded-lg text-xs font-medium transition ${filterType === t ? "bg-indigo-600 text-white" : "bg-gray-800 text-gray-400 hover:bg-gray-700"}`}
+                                    >
+                                        {t}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Mode Filter */}
+                        <div>
+                            <label className="block text-xs font-bold uppercase tracking-widest text-gray-500 mb-3">Mode</label>
+                            <div className="flex gap-2">
+                                {["All", "online", "offline"].map(m => (
+                                    <button
+                                        key={m}
+                                        onClick={() => setFilterMode(m)}
+                                        className={`flex-1 px-3 py-1.5 rounded-lg text-xs font-medium capitalize transition ${filterMode === m ? "bg-indigo-600 text-white" : "bg-gray-800 text-gray-400 hover:bg-gray-700"}`}
+                                    >
+                                        {m}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Price Filter */}
+                        <div>
+                            <label className="block text-xs font-bold uppercase tracking-widest text-gray-500 mb-3">Pricing</label>
+                            <div className="flex gap-2">
+                                {["All", "Free", "Paid"].map(p => (
+                                    <button
+                                        key={p}
+                                        onClick={() => setFilterPrice(p)}
+                                        className={`flex-1 px-3 py-1.5 rounded-lg text-xs font-medium transition ${filterPrice === p ? "bg-indigo-600 text-white" : "bg-gray-800 text-gray-400 hover:bg-gray-700"}`}
+                                    >
+                                        {p}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="mt-6 pt-6 border-t border-gray-800 flex justify-end">
+                        <button
+                            onClick={() => {
+                                setFilterType("All");
+                                setFilterMode("All");
+                                setFilterPrice("All");
+                                setSearchTerm("");
+                            }}
+                            className="text-xs font-bold text-gray-500 hover:text-indigo-400 transition uppercase tracking-widest"
+                        >
+                            Reset All Filters
+                        </button>
+                    </div>
+                </div>
+            )}
+
             {loading ? (
                 <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     {[...Array(3)].map((_, i) => (
@@ -101,83 +220,155 @@ export default function Hackathons() {
                 </div>
             ) : (
                 <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {events.map(ev => {
-                        const ended = new Date(ev.date) < new Date();
+                    {filteredEvents.map(ev => {
                         return (
                             <div
                                 key={ev._id}
-                                className="group bg-gray-900/50 backdrop-blur-sm border border-gray-800 rounded-2xl p-6 hover:border-indigo-500/50 hover:bg-gray-800/50 transition-all duration-300 hover:shadow-lg hover:shadow-indigo-500/10 flex flex-col"
+                                onClick={() => setSelectedEvent(ev)}
+                                className="group bg-gray-900/50 backdrop-blur-sm border border-gray-800 rounded-2xl overflow-hidden hover:border-indigo-500/50 hover:bg-gray-800/50 transition-all duration-300 cursor-pointer flex flex-col"
                             >
-                                {/* Top badges */}
-                                <div className="flex items-center gap-2 mb-4">
-                                    <span className={`text-xs px-2.5 py-1 rounded-full border font-medium ${MODE_COLORS[ev.mode]}`}>
-                                        {ev.mode === "online" ? "🌐 Online" : "📍 Offline"}
-                                    </span>
-                                    <span className={`text-xs px-2.5 py-1 rounded-full border font-medium ml-auto ${ended ? "bg-gray-700/30 text-gray-500 border-gray-700" : "bg-indigo-500/10 text-indigo-400 border-indigo-500/30"}`}>
-                                        {daysLeft(ev.date)}
-                                    </span>
-                                </div>
-
-                                {/* Title */}
-                                <h3 className="text-lg font-bold text-white mb-2 line-clamp-2 group-hover:text-indigo-300 transition">
-                                    {ev.title}
-                                </h3>
-
-                                {/* Description */}
-                                <p className="text-sm text-gray-400 line-clamp-3 mb-4 flex-1">
-                                    {ev.description}
-                                </p>
-
-                                {/* Meta info */}
-                                <div className="space-y-1.5 mb-5 text-xs text-gray-500">
-                                    <div className="flex items-center gap-1.5">
-                                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                        </svg>
-                                        <span>{formatDate(ev.date)}</span>
-                                    </div>
-                                    {ev.location && (
-                                        <div className="flex items-center gap-1.5">
-                                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                {/* Banner Image */}
+                                <div className="aspect-video w-full bg-gray-800 relative overflow-hidden">
+                                    {ev.image ? (
+                                        <img 
+                                            src={ev.image} 
+                                            alt={ev.title} 
+                                            className="w-full h-full object-cover transition duration-500 group-hover:scale-110" 
+                                        />
+                                    ) : (
+                                        <div className="w-full h-full flex items-center justify-center text-gray-700">
+                                            <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                             </svg>
-                                            <span>{ev.location}</span>
                                         </div>
                                     )}
-                                    <div className="flex items-center gap-1.5">
-                                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
-                                        </svg>
-                                        <span>Team of {ev.teamSize}</span>
+                                    <div className="absolute top-3 left-3 flex flex-col gap-2">
+                                        <span className="text-[10px] uppercase tracking-wider bg-indigo-600/90 text-white px-2 py-0.5 rounded font-bold backdrop-blur-sm">
+                                            {ev.type || "Hackathon"}
+                                        </span>
+                                        <span className={`text-[10px] uppercase tracking-wider px-2 py-0.5 rounded font-bold backdrop-blur-sm ${ev.price === "Paid" ? "bg-amber-500/90 text-white" : "bg-emerald-500/90 text-white"}`}>
+                                            {ev.price || "Free"}
+                                        </span>
+                                    </div>
+                                    <div className="absolute bottom-3 right-3">
+                                        <span className={`text-[9px] uppercase tracking-widest px-2 py-1 rounded-md font-bold backdrop-blur-md border ${MODE_COLORS[ev.mode]}`}>
+                                            {ev.mode}
+                                        </span>
                                     </div>
                                 </div>
 
-                                {/* Action Buttons */}
-                                <div className="flex gap-3">
-                                    {ev.registrationLink ? (
-                                        <a
-                                            href={ev.registrationLink}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="flex-1 text-center py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-lg transition"
-                                        >
-                                            Register
-                                        </a>
-                                    ) : (
-                                        <span className="flex-1 text-center py-2 bg-gray-800 text-gray-500 text-sm rounded-lg cursor-not-allowed">
-                                            No Link
+                                {/* Content */}
+                                <div className="p-4 flex-1 flex flex-col">
+                                    <h3 className="text-lg font-bold text-white line-clamp-2 group-hover:text-indigo-400 transition">
+                                        {ev.title}
+                                    </h3>
+                                    <div className="mt-2 flex items-center justify-between text-xs text-gray-500">
+                                        <span>{formatDate(ev.date)}</span>
+                                        <span className={new Date(ev.date) < new Date() ? "text-red-400" : "text-green-400"}>
+                                            {daysLeft(ev.date)}
                                         </span>
-                                    )}
-                                    <button
-                                        onClick={() => navigate("/discover?lookingFor=hackathon")}
-                                        className="flex-1 py-2 bg-purple-600/20 hover:bg-purple-600/40 text-purple-400 border border-purple-500/30 text-sm font-semibold rounded-lg transition"
-                                    >
-                                        Find Team
-                                    </button>
+                                    </div>
                                 </div>
                             </div>
                         );
                     })}
+                </div>
+            )}
+
+            {/* Event Detail View */}
+            {selectedEvent && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-fade-in" onClick={() => setSelectedEvent(null)}>
+                    <div className="bg-gray-900 border border-gray-800 rounded-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto animate-slide-up" onClick={(e) => e.stopPropagation()}>
+                        {/* Header Image */}
+                        <div className="relative aspect-[21/9] w-full bg-gray-800">
+                            {selectedEvent.image ? (
+                                <img src={selectedEvent.image} alt={selectedEvent.title} className="w-full h-full object-cover" />
+                            ) : (
+                                <div className="w-full h-full flex items-center justify-center text-gray-700">
+                                    <svg className="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                    </svg>
+                                </div>
+                            )}
+                            <button 
+                                onClick={() => setSelectedEvent(null)}
+                                className="absolute top-4 right-4 bg-black/40 hover:bg-black/60 text-white p-2 rounded-full backdrop-blur-md transition"
+                            >
+                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </div>
+
+                        {/* Details */}
+                        <div className="p-6 sm:p-8">
+                            <div className="flex flex-wrap items-center gap-3 mb-4">
+                                <span className="text-xs font-bold uppercase tracking-widest bg-indigo-600/20 text-indigo-400 border border-indigo-500/30 px-3 py-1 rounded-full">
+                                    {selectedEvent.type || "Hackathon"}
+                                </span>
+                                <span className={`text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full border ${MODE_COLORS[selectedEvent.mode]}`}>
+                                    {selectedEvent.mode}
+                                </span>
+                                <span className="text-xs font-bold uppercase tracking-widest bg-gray-800 text-gray-400 border border-gray-700 px-3 py-1 rounded-full ml-auto">
+                                    {daysLeft(selectedEvent.date)}
+                                </span>
+                            </div>
+
+                            <h2 className="text-3xl font-bold text-white mb-4">{selectedEvent.title}</h2>
+                            
+                            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                                <div className="bg-gray-800/40 p-4 rounded-xl border border-gray-700/50">
+                                    <p className="text-gray-500 text-xs uppercase font-bold mb-1">Date</p>
+                                    <p className="text-gray-200 font-semibold">{formatDate(selectedEvent.date)}</p>
+                                </div>
+                                <div className="bg-gray-800/40 p-4 rounded-xl border border-gray-700/50">
+                                    <p className="text-gray-500 text-xs uppercase font-bold mb-1">Pricing</p>
+                                    <p className="text-gray-200 font-semibold">{selectedEvent.price || "Free"}</p>
+                                </div>
+                                <div className="bg-gray-800/40 p-4 rounded-xl border border-gray-700/50">
+                                    <p className="text-gray-500 text-xs uppercase font-bold mb-1">Team Size</p>
+                                    <p className="text-gray-200 font-semibold">Up to {selectedEvent.teamSize} members</p>
+                                </div>
+                                <div className="bg-gray-800/40 p-4 rounded-xl border border-gray-700/50">
+                                    <p className="text-gray-500 text-xs uppercase font-bold mb-1">Location</p>
+                                    <p className="text-gray-200 font-semibold">{selectedEvent.location || (selectedEvent.mode === "online" ? "Virtual" : "To be announced")}</p>
+                                </div>
+                            </div>
+
+                            <div className="prose prose-invert max-w-none">
+                                <h3 className="text-xl font-bold text-white mb-3">About the Event</h3>
+                                <p className="text-gray-400 whitespace-pre-wrap leading-relaxed">
+                                    {selectedEvent.description}
+                                </p>
+                            </div>
+
+                            <div className="mt-8 pt-8 border-t border-gray-800 flex flex-col sm:flex-row gap-4">
+                                {selectedEvent.registrationLink ? (
+                                    <a
+                                        href={selectedEvent.registrationLink}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="flex-1 text-center py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl transition shadow-lg shadow-indigo-600/20"
+                                    >
+                                        Register Now
+                                    </a>
+                                ) : (
+                                    <button disabled className="flex-1 py-4 bg-gray-800 text-gray-500 font-bold rounded-xl cursor-not-allowed">
+                                        Registration Closed
+                                    </button>
+                                )}
+                                <button
+                                    onClick={() => {
+                                        setSelectedEvent(null);
+                                        navigate("/discover?lookingFor=hackathon");
+                                    }}
+                                    className="flex-1 py-4 bg-purple-600/20 hover:bg-purple-600/30 text-purple-400 border border-purple-500/30 font-bold rounded-xl transition"
+                                >
+                                    Find a Team
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             )}
         </div>

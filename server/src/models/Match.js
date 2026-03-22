@@ -10,7 +10,7 @@ const matchSchema = new mongoose.Schema(
   { versionKey: false }
 );
 
-matchSchema.index({ users: 1 }, { unique: true });
+matchSchema.index({ users: 1 }, { name: "match_users_multi_idx" });
 
 const Match = mongoose.model("Match", matchSchema);
 export default Match;

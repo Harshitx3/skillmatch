@@ -3,7 +3,7 @@ import Event from "../models/Event.js";
 // POST /api/events/create - submit hackathon (any logged-in user)
 export async function createEvent(req, res) {
     try {
-        const { title, description, date, mode, location, registrationLink, teamSize } = req.body;
+        const { title, description, date, mode, location, registrationLink, teamSize, image, type, price } = req.body;
         if (!title || !description || !date || !mode) {
             return res.status(400).json({ error: "title, description, date, and mode are required" });
         }
@@ -15,12 +15,28 @@ export async function createEvent(req, res) {
             location: location || "",
             registrationLink: registrationLink || "",
             teamSize: teamSize || 1,
+            image: image || "",
+            type: type || "hackathon",
+            price: price || "Free",
             createdBy: req.userId,
             status: "pending",
         });
         res.status(201).json(event);
     } catch (e) {
         console.error("createEvent error:", e);
+        res.status(500).json({ error: "Server error" });
+    }
+}
+
+// GET /api/events/:id - public: get single hackathon details
+export async function getEventById(req, res) {
+    try {
+        const event = await Event.findById(req.params.id)
+            .populate("createdBy", "name username avatar email")
+            .lean();
+        if (!event) return res.status(404).json({ error: "Event not found" });
+        res.json(event);
+    } catch (e) {
         res.status(500).json({ error: "Server error" });
     }
 }
@@ -96,7 +112,7 @@ export async function getMyEvents(req, res) {
 // PUT /api/events/:id - update user's own event
 export async function updateEvent(req, res) {
     try {
-        const { title, description, date, mode, location, registrationLink, teamSize } = req.body;
+        const { title, description, date, mode, location, registrationLink, teamSize, image, type, price } = req.body;
         const event = await Event.findOne({ _id: req.params.id, createdBy: req.userId });
         if (!event) return res.status(404).json({ error: "Event not found or not authorized" });
 
@@ -107,6 +123,9 @@ export async function updateEvent(req, res) {
         event.location = location !== undefined ? location : event.location;
         event.registrationLink = registrationLink !== undefined ? registrationLink : event.registrationLink;
         event.teamSize = teamSize || event.teamSize;
+        event.image = image !== undefined ? image : event.image;
+        event.type = type || event.type;
+        event.price = price || event.price;
 
         await event.save();
         res.json(event);

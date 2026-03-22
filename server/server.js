@@ -66,6 +66,17 @@ async function start() {
     await mongoose.connect(MONGO_URI);
     console.log("✅ MongoDB connected successfully");
 
+    // Clean up any old unique indexes on the Match collection
+    try {
+      const matchColl = mongoose.connection.collection("matches");
+      if (matchColl) {
+        await matchColl.dropIndexes();
+        console.log("✅ Dropped old match indexes to allow multiple matches");
+      }
+    } catch (indexError) {
+      console.log("ℹ️ No old match indexes to drop or collection not yet initialized");
+    }
+
     httpServer.listen(PORT, () => {
       console.log(`🚀 Server is running on http://localhost:${PORT}`);
     });

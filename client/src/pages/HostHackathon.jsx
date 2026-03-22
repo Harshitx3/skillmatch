@@ -12,22 +12,96 @@ export default function HostHackathon() {
         location: "",
         registrationLink: "",
         teamSize: 2,
+        type: "Hackathon",
+        price: "Free",
+        customType: "",
+        image: "",
     });
+    const [isOtherType, setIsOtherType] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [uploading, setUploading] = useState(false);
     const [error, setError] = useState("");
     const [success, setSuccess] = useState(false);
 
+    const PREDEFINED_TYPES = [
+        "Hackathon",
+        "AI",
+        "Web Development",
+        "App Development",
+        "Blockchain",
+        "Cybersecurity",
+        "Open for All",
+        "Coding Contest",
+        "Workshop",
+        "Seminar",
+    ];
+
     function handleChange(e) {
-        setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
+        const { name, value } = e.target;
+        if (name === "type") {
+            if (value === "Other") {
+                setIsOtherType(true);
+                setForm(prev => ({ ...prev, type: "Other", customType: "" }));
+            } else {
+                setIsOtherType(false);
+                setForm(prev => ({ ...prev, type: value, customType: "" }));
+            }
+        } else {
+            setForm(prev => ({ ...prev, [name]: value }));
+        }
     }
+
+    const handleImageUpload = async (e) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        if (!file.type.startsWith('image/')) {
+            alert('Please select an image file');
+            return;
+        }
+
+        if (file.size > 5 * 1024 * 1024) {
+            alert('Image size should be less than 5MB');
+            return;
+        }
+
+        setUploading(true);
+        try {
+            const formData = new FormData();
+            formData.append('image', file);
+
+            const response = await api.post('/upload/event-image', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
+
+            if (response.data.url) {
+                setForm(prev => ({ ...prev, image: response.data.url }));
+            }
+        } catch (error) {
+            console.error('Upload error:', error);
+            alert('Failed to upload image. Please try again.');
+        } finally {
+            setUploading(false);
+        }
+    };
 
     async function handleSubmit(e) {
         e.preventDefault();
         setError("");
         setLoading(true);
         try {
+            const finalType = isOtherType ? form.customType : form.type;
+            if (!finalType || (isOtherType && !form.customType)) {
+                setError("Please specify an event type");
+                setLoading(false);
+                return;
+            }
+
             await api.post("/events/create", {
                 ...form,
+                type: finalType,
                 teamSize: Number(form.teamSize),
             });
             setSuccess(true);
@@ -87,17 +161,75 @@ export default function HostHackathon() {
                     </div>
                 )}
 
-                {/* Title */}
+                {/* Banner Image */}
                 <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-1.5">Hackathon Title *</label>
-                    <input
-                        name="title"
-                        value={form.title}
-                        onChange={handleChange}
-                        required
-                        placeholder="e.g. HackIndia 2026"
-                        className="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 transition"
-                    />
+                    <label className="block text-sm font-medium text-gray-300 mb-1.5">Hackathon Banner Image</label>
+                    <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-700 border-dashed rounded-lg hover:border-indigo-500 transition-colors bg-gray-900/50 relative overflow-hidden group">
+                        {form.image ? (
+                            <div className="relative w-full aspect-video rounded-lg overflow-hidden">
+                                <img src={form.image} alt="Banner Preview" className="w-full h-full object-cover" />
+                                <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <label className="cursor-pointer bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-lg backdrop-blur-sm transition text-sm font-medium">
+                                        Change Image
+                                        <input type="file" className="hidden" accept="image/*" onChange={handleImageUpload} />
+                                    </label>
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="space-y-1 text-center">
+                                <svg className="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
+                                    <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                </svg>
+                                <div className="flex text-sm text-gray-400">
+                                    <label className="relative cursor-pointer rounded-md font-medium text-indigo-400 hover:text-indigo-300 focus-within:outline-none transition">
+                                        <span>{uploading ? "Uploading..." : "Upload a file"}</span>
+                                        <input type="file" className="hidden" accept="image/*" onChange={handleImageUpload} disabled={uploading} />
+                                    </label>
+                                    <p className="pl-1">or drag and drop</p>
+                                </div>
+                                <p className="text-xs text-gray-500">PNG, JPG, GIF up to 5MB</p>
+                            </div>
+                        )}
+                    </div>
+                </div>
+
+                {/* Type & Title */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div className="sm:col-span-1">
+                        <label className="block text-sm font-medium text-gray-300 mb-1.5">Type *</label>
+                        <select
+                            name="type"
+                            value={isOtherType ? "Other" : form.type}
+                            onChange={handleChange}
+                            className="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-indigo-500 transition"
+                        >
+                            {PREDEFINED_TYPES.map(t => (
+                                <option key={t} value={t}>{t}</option>
+                            ))}
+                            <option value="Other">Other (Custom)</option>
+                        </select>
+                        {isOtherType && (
+                            <input
+                                name="customType"
+                                value={form.customType}
+                                onChange={handleChange}
+                                placeholder="Enter custom type..."
+                                className="mt-2 w-full bg-gray-900 border border-indigo-500/50 rounded-lg px-4 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 transition text-sm"
+                                autoFocus
+                            />
+                        )}
+                    </div>
+                    <div className="sm:col-span-2">
+                        <label className="block text-sm font-medium text-gray-300 mb-1.5">Hackathon Title *</label>
+                        <input
+                            name="title"
+                            value={form.title}
+                            onChange={handleChange}
+                            required
+                            placeholder="e.g. HackIndia 2026"
+                            className="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 transition"
+                        />
+                    </div>
                 </div>
 
                 {/* Description */}
@@ -114,8 +246,8 @@ export default function HostHackathon() {
                     />
                 </div>
 
-                {/* Date & Mode */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {/* Date, Mode & Price */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <div>
                         <label className="block text-sm font-medium text-gray-300 mb-1.5">Event Date *</label>
                         <input
@@ -137,6 +269,18 @@ export default function HostHackathon() {
                         >
                             <option value="online">Online</option>
                             <option value="offline">Offline</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-300 mb-1.5">Pricing *</label>
+                        <select
+                            name="price"
+                            value={form.price}
+                            onChange={handleChange}
+                            className="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-indigo-500 transition"
+                        >
+                            <option value="Free">Free</option>
+                            <option value="Paid">Paid</option>
                         </select>
                     </div>
                 </div>

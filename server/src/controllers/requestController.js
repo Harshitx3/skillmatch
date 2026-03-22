@@ -5,8 +5,9 @@ import mongoose from "mongoose";
 import { io, connectedUsers } from "../../server.js";
 
 function sortPair(a, b) {
+  if (!a || !b) return [];
   const s = [a.toString(), b.toString()].sort();
-  return s;
+  return s.map(id => new mongoose.Types.ObjectId(id));
 }
 
 export async function createRequest(req, res) {
@@ -69,8 +70,9 @@ export async function createRequest(req, res) {
     const fromUserDetails = await User.findById(req.userId).select("name username avatar");
 
     // Emit real-time notification to the target user if they're online
-    const targetSocketId = connectedUsers.get(toUser);
+    const targetSocketId = connectedUsers.get(toId.toString());
     if (targetSocketId) {
+      console.log(`🔔 Sending real-time notification to socket: ${targetSocketId}`);
       io.to(targetSocketId).emit("new_like", {
         fromUser: {
           id: fromUserDetails._id,
@@ -81,6 +83,8 @@ export async function createRequest(req, res) {
         requestId: reqDoc._id,
         timestamp: new Date()
       });
+    } else {
+      console.log(`🔕 Target user ${toId.toString()} not online, skipping real-time emit`);
     }
 
     res.status(201).json(reqDoc);
@@ -119,7 +123,6 @@ export async function acceptRequest(req, res) {
   try {
     const { id } = req.params;
 
-    // Validate request ID
     if (!id || !mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({ error: "Invalid request ID" });
     }
@@ -134,9 +137,25 @@ export async function acceptRequest(req, res) {
     r.status = "accepted";
     await r.save();
 
-    const pair = sortPair(r.fromUser, r.toUser);
-    const exists = await Match.findOne({ users: pair });
-    if (!exists) await Match.create({ users: pair });
+    try {
+      const pair = sortPair(r.fromUser, r.toUser);
+      console.log(`🔍 Checking match for pair: ${pair}`);
+      
+      // Use $all and $size to find exact match regardless of order in DB
+      // although we try to keep it sorted via sortPair
+      const exists = await Match.findOne({ 
+        users: { $all: pair } 
+      });
+
+      if (!exists) {
+        console.log(`✨ Creating new match for pair: ${pair}`);
+        await Match.create({ users: pair });
+      } else {
+        console.log(`✅ Match already exists for pair: ${pair}`);
+      }
+    } catch (matchError) {
+      console.error("❌ Match creation/check error:", matchError);
+    }
 
     res.json(r);
   } catch (e) {

@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Modal from "../components/Modal.jsx";
 import Login from "./Login.jsx";
 import Register from "./Register.jsx";
+import Footer from "../components/Footer.jsx";
 
 export default function Landing() {
   const [isLoginOpen, setLoginOpen] = useState(false);
@@ -23,109 +24,9 @@ export default function Landing() {
 
   return (
     <>
-      {/* Navbar */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-gray-950/90 backdrop-blur-md border-b border-gray-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            {/* Logo */}
-            <div className="flex-shrink-0">
-              <span className="text-2xl font-bold bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent">
-                DevLink
-              </span>
-            </div>
-
-            {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center gap-6">
-              <a href="#features" className="text-gray-300 hover:text-white transition">Features</a>
-              <a href="#about" className="text-gray-300 hover:text-white transition">About</a>
-              <a href="#contact" className="text-gray-300 hover:text-white transition">Contact</a>
-            </div>
-
-            {/* Desktop Auth Buttons */}
-            <div className="hidden md:flex items-center gap-3">
-              {!isLoggedIn ? (
-                <>
-                  <button
-                    onClick={openLogin}
-                    className="px-4 py-2 text-gray-300 hover:text-white transition"
-                  >
-                    Sign In
-                  </button>
-                  <button
-                    onClick={openRegister}
-                    className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition"
-                  >
-                    Get Started
-                  </button>
-                </>
-              ) : (
-                <button
-                  onClick={goToDiscover}
-                  className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition"
-                >
-                  Go to App
-                </button>
-              )}
-            </div>
-
-            {/* Mobile menu button */}
-            <div className="md:hidden">
-              <button
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="p-2 text-gray-400 hover:text-white"
-              >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  {mobileMenuOpen ? (
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  ) : (
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                  )}
-                </svg>
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Mobile menu */}
-        {mobileMenuOpen && (
-          <div className="md:hidden bg-gray-900 border-b border-gray-800">
-            <div className="px-4 py-4 space-y-3">
-              <a href="#features" className="block text-gray-300 hover:text-white transition py-2">Features</a>
-              <a href="#about" className="block text-gray-300 hover:text-white transition py-2">About</a>
-              <a href="#contact" className="block text-gray-300 hover:text-white transition py-2">Contact</a>
-              <div className="pt-3 border-t border-gray-800">
-                {!isLoggedIn ? (
-                  <>
-                    <button
-                      onClick={() => { setMobileMenuOpen(false); openLogin(); }}
-                      className="block w-full text-left text-gray-300 hover:text-white transition py-2"
-                    >
-                      Sign In
-                    </button>
-                    <button
-                      onClick={() => { setMobileMenuOpen(false); openRegister(); }}
-                      className="block w-full text-left text-indigo-400 hover:text-indigo-300 transition py-2"
-                    >
-                      Get Started
-                    </button>
-                  </>
-                ) : (
-                  <button
-                    onClick={() => { setMobileMenuOpen(false); goToDiscover(); }}
-                    className="block w-full text-left text-indigo-400 hover:text-indigo-300 transition py-2"
-                  >
-                    Go to App
-                  </button>
-                )}
-              </div>
-            </div>
-          </div>
-        )}
-      </nav>
-
       <div className={`transition-filter duration-300 ${(isLoginOpen || isRegisterOpen) ? 'blur-sm' : ''}`}>
         {/* Hero Section */}
-        <section className="pt-32 pb-12 px-4 text-center">
+        <section className="pt-24 pb-12 px-4 text-center">
           <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-6 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent animate-gradient">
             Build Your Next Big Thing Together
           </h1>
@@ -194,9 +95,7 @@ export default function Landing() {
 
 
         {/* Footer */}
-        <footer className="py-10 text-center border-t border-gray-800 text-gray-500 text-sm">
-          <p>&copy; {new Date().getFullYear()} DevLink. Connect. Build. Ship.</p>
-        </footer>
+        <Footer />
       </div>
 
       <Modal isOpen={isLoginOpen} onClose={closeModals}>

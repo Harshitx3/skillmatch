@@ -67,6 +67,7 @@ function Layout({ children }) {
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
   const closeMenu = () => setIsMenuOpen(false);
+  const isLandingPage = location.pathname === "/";
 
   return (
     <div className="min-h-screen bg-gray-950 text-gray-100">
@@ -103,6 +104,7 @@ function Layout({ children }) {
             </>
           ) : (
             <>
+              {isLandingPage && <a href="#features" className="hover:text-indigo-400 transition">Features</a>}
               <Link to="/hackathons" className="hover:text-indigo-400 transition">Hackathons</Link>
               <Link to="/about" className="hover:text-indigo-400 transition">About Us</Link>
               <Link to="/contact" className="hover:text-indigo-400 transition">Contact Us</Link>
@@ -166,6 +168,7 @@ function Layout({ children }) {
               </>
             ) : (
               <>
+                {isLandingPage && <a href="#features" onClick={closeMenu} className="hover:text-indigo-400 transition py-2">Features</a>}
                 <Link to="/hackathons" onClick={closeMenu} className="hover:text-indigo-400 transition py-2">🏆 Hackathons</Link>
                 <Link to="/about" onClick={closeMenu} className="hover:text-indigo-400 transition py-2">About Us</Link>
                 <Link to="/contact" onClick={closeMenu} className="hover:text-indigo-400 transition py-2">Contact Us</Link>

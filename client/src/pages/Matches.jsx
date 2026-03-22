@@ -4,14 +4,31 @@ import api from "../lib/api.js";
 export default function Matches() {
   const [items, setItems] = useState([]);
   const [selectedImage, setSelectedImage] = useState(null);
+  const [removingId, setRemovingId] = useState(null);
+
+  async function load() {
+    const { data } = await api.get("/matches");
+    setItems(data);
+  }
 
   useEffect(() => {
-    async function load() {
-      const { data } = await api.get("/matches");
-      setItems(data);
-    }
     load();
   }, []);
+
+  async function handleRemove(id) {
+    if (!window.confirm("Are you sure you want to remove this match?")) return;
+    
+    setRemovingId(id);
+    try {
+      await api.delete(`/matches/${id}`);
+      setItems(prev => prev.filter(u => u._id !== id));
+    } catch (err) {
+      console.error("Remove match error:", err);
+      alert("Failed to remove match");
+    } finally {
+      setRemovingId(null);
+    }
+  }
 
   const getAvatarUrl = (user) => {
     return user?.avatar || user?.avatarUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.name || "User"}&backgroundColor=ffdfbf`;
@@ -82,6 +99,20 @@ export default function Matches() {
                   <h3 className="font-bold text-lg text-white truncate">{u.name}</h3>
                   <p className="text-sm text-gray-400 truncate">{u.college || "Developer"}</p>
                 </div>
+                <button
+                  onClick={() => handleRemove(u._id)}
+                  disabled={removingId === u._id}
+                  className="p-2 text-gray-500 hover:text-red-500 hover:bg-red-500/10 rounded-full transition"
+                  title="Remove match"
+                >
+                  {removingId === u._id ? (
+                    <div className="w-5 h-5 border-2 border-red-500 border-t-transparent rounded-full animate-spin"></div>
+                  ) : (
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                  )}
+                </button>
               </div>
 
               {/* Skills Tags */}

@@ -59,7 +59,9 @@ export async function getUsers(req, res) {
       }
     }
 
-    const users = await User.find(filter).select("-password").lean();
+    const users = await User.find(filter)
+      .select("-password -email -githubUsername -leetcodeUsername")
+      .lean();
     res.json(users);
   } catch (e) {
     console.error("Get users error:", e);

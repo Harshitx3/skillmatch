@@ -51,4 +51,34 @@ router.post('/profile-image', authMiddleware, upload.single('image'), async (req
     }
 });
 
+// Upload event image
+router.post('/event-image', authMiddleware, upload.single('image'), async (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ error: 'No image file provided' });
+        }
+
+        const b64 = Buffer.from(req.file.buffer).toString('base64');
+        const dataURI = `data:${req.file.mimetype};base64,${b64}`;
+
+        const result = await cloudinary.uploader.upload(dataURI, {
+            folder: 'devlink/events',
+            public_id: `event_${req.userId}_${Date.now()}`,
+            transformation: [
+                { width: 1200, height: 630, crop: 'fill' }, // Standard aspect ratio for banners
+                { quality: 'auto' }
+            ]
+        });
+
+        res.json({
+            success: true,
+            url: result.secure_url,
+            publicId: result.public_id
+        });
+    } catch (error) {
+        console.error('Event image upload error:', error);
+        res.status(500).json({ error: 'Failed to upload event image' });
+    }
+});
+
 export default router;
