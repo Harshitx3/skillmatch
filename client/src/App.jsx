@@ -55,7 +55,7 @@ function Layout({ children }) {
   // Fetch user data for the menu if token exists
   useEffect(() => {
     if (token) {
-      api.get("/users/me").then(res => setUserData(res.data)).catch(() => { });
+      api.get("/api/users/me").then(res => setUserData(res.data)).catch(() => { });
     }
   }, [token]);
 

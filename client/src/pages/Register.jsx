@@ -10,7 +10,7 @@ export default function Register({ switchToLogin }) {
   const submit = async (e) => {
     e.preventDefault();
     try {
-      const { data } = await api.post("/auth/register", { name, email, password });
+      const { data } = await api.post("/api/auth/register", { name, email, password });
       localStorage.setItem("token", data.token);
       // New users always need to complete profile
       window.location.href = "/profile";
