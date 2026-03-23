@@ -21,7 +21,7 @@ export default function Swipe() {
     if (filters.skills) params.skills = filters.skills;
     if (filters.experienceLevel) params.experienceLevel = filters.experienceLevel;
     if (filters.lookingFor) params.lookingFor = filters.lookingFor;
-    const { data } = await api.get("/users", { params });
+    const { data } = await api.get("/api/users", { params });
 
     // Refresh current matches and sent requests to filter properly
     const matchesData = await loadMatches();
@@ -36,7 +36,7 @@ export default function Swipe() {
 
   async function loadCurrentUser() {
     try {
-      const { data } = await api.get("/users/me");
+      const { data } = await api.get("/api/users/me");
       setCurrentUser(data);
     } catch { }
   }
@@ -44,7 +44,7 @@ export default function Swipe() {
   async function loadSentRequests() {
     try {
       // Get all requests sent by current user (including rejected)
-      const { data } = await api.get("/requests/sent");
+      const { data } = await api.get("/api/requests/sent");
       // Only track pending requests as "sent" - rejected ones can be resent
       const pendingIds = new Set(
         data.filter(r => r.status === "pending").map(r => r.toUser.toString())
@@ -56,7 +56,7 @@ export default function Swipe() {
 
   async function loadMatches() {
     try {
-      const { data } = await api.get("/matches");
+      const { data } = await api.get("/api/matches");
       const matchIds = new Set(data.map(m => m._id.toString()));
       setMatches(matchIds);
       return matchIds;
@@ -93,7 +93,7 @@ export default function Swipe() {
     }
 
     try {
-      await api.post("/requests", { toUser: user._id });
+      await api.post("/api/requests", { toUser: user._id });
       setSentRequests(prev => new Set([...prev, user._id]));
     } catch (err) {
       console.error("Like error:", err.response?.data?.error || err.message);

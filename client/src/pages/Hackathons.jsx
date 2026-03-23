@@ -22,7 +22,7 @@ export default function Hackathons() {
     useEffect(() => {
         async function load() {
             try {
-                const { data } = await api.get("/events");
+                const { data } = await api.get("/api/events");
                 setEvents(data);
             } catch { 
             } finally {

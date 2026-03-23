@@ -7,7 +7,7 @@ export default function Matches() {
   const [removingId, setRemovingId] = useState(null);
 
   async function load() {
-      const { data } = await api.get("/matches");
+      const { data } = await api.get("/api/matches");
       setItems(data);
     }
 
@@ -20,7 +20,7 @@ export default function Matches() {
     
     setRemovingId(id);
     try {
-      await api.delete(`/matches/${id}`);
+      await api.delete(`/api/matches/${id}`);
       setItems(prev => prev.filter(u => u._id !== id));
     } catch (err) {
       console.error("Remove match error:", err);

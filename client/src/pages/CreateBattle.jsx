@@ -25,7 +25,7 @@ export default function CreateBattle() {
 
     async function fetchMyBattles() {
         try {
-            const { data } = await api.get("/battles/my");
+            const { data } = await api.get("/api/battles/my");
             setMyBattles(data);
         } catch (err) {
             console.error("fetchMyBattles error:", err);
@@ -60,7 +60,7 @@ export default function CreateBattle() {
         setLoading(true);
         setError("");
         try {
-            const { data } = await api.post(`/battles/${joinCode.toUpperCase()}/join`);
+            const { data } = await api.post(`/api/battles/${joinCode.toUpperCase()}/join`);
             navigate(`/battle/${data.battle.inviteCode}`);
         } catch (err) {
             setError(err.response?.data?.error || "Failed to join battle. Check your code.");
@@ -79,7 +79,7 @@ export default function CreateBattle() {
         }
         setLoading(true);
         try {
-            const { data } = await api.post("/battles/create", {
+            const { data } = await api.post("/api/battles/create", {
                 ...form,
                 duration: Number(form.duration),
                 minPlayers: Number(form.minPlayers),
