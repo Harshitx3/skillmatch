@@ -30,7 +30,7 @@ export default function AdminEvents() {
 
     async function load() {
         try {
-            const { data } = await api.get("/events/admin");
+            const { data } = await api.get("/api/events/admin");
             setEvents(data);
         } catch {
             alert("Access denied. Admin only.");

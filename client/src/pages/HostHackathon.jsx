@@ -70,7 +70,7 @@ export default function HostHackathon() {
             const formData = new FormData();
             formData.append('image', file);
 
-            const response = await api.post('/upload/event-image', formData, {
+            const response = await api.post('/api/upload/event-image', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
@@ -99,7 +99,7 @@ export default function HostHackathon() {
                 return;
             }
 
-            await api.post("/events/create", {
+            await api.post("/api/events/create", {
                 ...form,
                 type: finalType,
                 teamSize: Number(form.teamSize),

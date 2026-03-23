@@ -23,7 +23,7 @@ export default function MyHackathons() {
     useEffect(() => {
         async function load() {
             try {
-                const { data } = await api.get("/events/my");
+                const { data } = await api.get("/api/events/my");
                 setMyEvents(data);
             } catch { }
             finally { setLoading(false); }

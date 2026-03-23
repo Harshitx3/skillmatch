@@ -6,11 +6,11 @@ export default function GoogleAuthButton() {
   const handleSuccess = async (credentialResponse) => {
     try {
       const { credential } = credentialResponse;
-      const { data } = await api.post("/auth/google", { credential });
+      const { data } = await api.post("/api/auth/google", { credential });
       localStorage.setItem("token", data.token);
       // Redirect based on profile completion
       if (data.profileComplete) {
-        window.location.href = "/swipe";
+        window.location.href = "/discover";
       } else {
         window.location.href = "/profile";
       }
