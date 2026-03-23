@@ -8,7 +8,7 @@ export default function Notifications() {
   const { notifications, clearNotifications } = useSocket();
 
   async function load() {
-    const { data } = await api.get("/api/requests/pending");
+    const { data } = await api.get("/requests/pending");
     setItems(data);
   }
   useEffect(() => {
@@ -22,7 +22,7 @@ export default function Notifications() {
         console.error("No request ID provided");
         return;
       }
-      await api.put(`/api/requests/${id}/accept`);
+      await api.put(`/requests/${id}/accept`);
       load();
     } catch (err) {
       console.error("Accept error:", err.response?.data?.error || err.message);
@@ -36,7 +36,7 @@ export default function Notifications() {
         console.error("No request ID provided");
         return;
       }
-      await api.put(`/api/requests/${id}/reject`);
+      await api.put(`/requests/${id}/reject`);
       load();
     } catch (err) {
       console.error("Reject error:", err.response?.data?.error || err.message);

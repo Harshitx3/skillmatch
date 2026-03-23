@@ -7,9 +7,9 @@ export default function Matches() {
   const [removingId, setRemovingId] = useState(null);
 
   async function load() {
-    const { data } = await api.get("/api/matches");
-    setItems(data);
-  }
+      const { data } = await api.get("/matches");
+      setItems(data);
+    }
 
   useEffect(() => {
     load();

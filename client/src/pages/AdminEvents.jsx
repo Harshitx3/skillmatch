@@ -30,10 +30,10 @@ export default function AdminEvents() {
 
     async function load() {
         try {
-            const { data } = await api.get("/api/events/admin");
+            const { data } = await api.get("/events/admin");
             setEvents(data);
-        } catch {
-            alert("Access denied. Admin only.");
+        } catch (err) {
+            alert(err.response?.data?.error || "Access denied. Admin only.");
         } finally {
             setLoading(false);
         }
@@ -42,8 +42,16 @@ export default function AdminEvents() {
     async function handleAction(id, action) {
         setActionLoading(id + action);
         try {
-            await api.put(`/events/${id}/${action}`);
-            setEvents(prev => prev.map(e => e._id === id ? { ...e, status: action === "approve" ? "approved" : "rejected" } : e));
+            const { data } = await api.put(`/events/${id}/${action}`);
+            const newStatus = action === "approve" ? "approved" : "rejected";
+            
+            // Update the event in the list with data from server if available, otherwise manual update
+            setEvents(prev => prev.map(e => e._id === id ? (data?._id ? data : { ...e, status: newStatus }) : e));
+            
+            // Update selectedEvent if it's currently open to maintain state consistency
+            if (selectedEvent?._id === id) {
+                setSelectedEvent(prev => prev ? (data?._id ? data : { ...prev, status: newStatus }) : null);
+            }
         } catch (err) {
             alert(err.response?.data?.error || "Action failed");
         } finally {

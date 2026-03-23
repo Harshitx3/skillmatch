@@ -68,17 +68,17 @@ export default function BattleRoom() {
     }, [timer?.expired, battle?.status]);
 
     useEffect(() => {
-        api.get("/api/users/me").then(({ data }) => setCurrentUserId(data._id)).catch(() => { });
+        api.get("/users/me").then(({ data }) => setCurrentUserId(data._id)).catch(() => { });
     }, []);
 
     const loadBattle = useCallback(async () => {
         try {
-            const { data } = await api.get(`/api/battles/${code}`);
+            const { data } = await api.get(`/battles/${code}`);
             setBattle(data);
             setParticipants(data.participants || []);
             battleIdRef.current = data._id;
             if (data.status !== "waiting") {
-                const lb = await api.get(`/api/battles/${data._id}/leaderboard`);
+                const lb = await api.get(`/battles/${data._id}/leaderboard`);
                 setLeaderboard(lb.data);
                 setShowLeaderboard(true);
             }
@@ -124,7 +124,7 @@ export default function BattleRoom() {
     async function joinBattle() {
         setJoining(true);
         try {
-            const { data } = await api.post(`/api/battles/${code}/join`);
+            const { data } = await api.post(`/battles/${code}/join`);
             setParticipants(data.participants || []);
         } catch (e) { alert(e.response?.data?.error || "Failed to join"); }
         finally { setJoining(false); }
@@ -133,7 +133,7 @@ export default function BattleRoom() {
     async function startBattle() {
         setStarting(true);
         try {
-            const { data } = await api.post(`/api/battles/${battle._id}/start`);
+            const { data } = await api.post(`/battles/${battle._id}/start`);
             setBattle(prev => ({ ...prev, status: "live", startTime: data.startTime }));
             setShowLeaderboard(true);
         } catch (e) { alert(e.response?.data?.error || "Cannot start"); }
@@ -142,7 +142,7 @@ export default function BattleRoom() {
 
     async function completeQuestion(idx) {
         try {
-            await api.post(`/api/battles/${battle._id}/questions/${idx}/complete`);
+            await api.post(`/battles/${battle._id}/questions/${idx}/complete`);
         } catch (e) { alert(e.response?.data?.error || "Failed to mark problem as done"); }
     }
 
@@ -150,7 +150,7 @@ export default function BattleRoom() {
         try {
             // Officially mark battle as completed in DB if not already
             if (battle.status !== "completed") {
-                await api.post(`/api/battles/${battle._id}/end`);
+                await api.post(`/battles/${battle._id}/end`);
             }
             navigate("/battle/create");
         } catch (e) {

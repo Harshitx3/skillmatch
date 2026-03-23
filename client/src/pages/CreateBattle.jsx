@@ -25,7 +25,7 @@ export default function CreateBattle() {
 
     async function fetchMyBattles() {
         try {
-            const { data } = await api.get("/api/battles/my");
+            const { data } = await api.get("/battles/my");
             setMyBattles(data);
         } catch (err) {
             console.error("fetchMyBattles error:", err);

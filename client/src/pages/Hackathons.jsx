@@ -22,10 +22,12 @@ export default function Hackathons() {
     useEffect(() => {
         async function load() {
             try {
-                const { data } = await api.get("/api/events");
+                const { data } = await api.get("/events");
                 setEvents(data);
-            } catch { }
-            finally { setLoading(false); }
+            } catch { 
+            } finally {
+                setLoading(false);
+            }
         }
         load();
     }, []);

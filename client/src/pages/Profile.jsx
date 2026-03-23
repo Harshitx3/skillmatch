@@ -36,7 +36,7 @@ export default function Profile() {
   useEffect(() => {
     async function load() {
       try {
-        const me = await api.get("/api/users/me");
+        const me = await api.get("/users/me");
         if (me?.data) {
           const data = me.data;
           // Convert skills array to string if needed
@@ -83,7 +83,7 @@ export default function Profile() {
       setUsernameStatus({ checking: true, available: null, message: "Checking availability..." });
 
       try {
-        const { data } = await api.get(`/api/users/check-username?username=${form.username}`);
+        const { data } = await api.get(`/users/check-username?username=${form.username}`);
         if (data.available) {
           setUsernameStatus({ checking: false, available: true, message: "✓ Username available" });
         } else {
@@ -117,7 +117,7 @@ export default function Profile() {
     };
 
     try {
-      const response = await api.put("/api/users/profile", payload);
+      const response = await api.put("/users/profile", payload);
 
       // Update local form with saved data
       if (response.data) {
@@ -162,7 +162,7 @@ export default function Profile() {
       const formData = new FormData();
       formData.append('image', file);
 
-      const response = await api.post('/api/upload/profile-image', formData, {
+      const response = await api.post('/upload/profile-image', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
