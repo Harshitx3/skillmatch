@@ -8,13 +8,13 @@ import jwt from "jsonwebtoken";
 dotenv.config();
 
 const PORT = process.env.PORT || 5000;
-const MONGO_URI = process.env.MONGO_URI || "mongodb://localhost:27017/devlink";
+const MONGO_URI = process.env.MONGO_URI ;
 
 // Create HTTP server and Socket.IO
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
   cors: {
-    origin: "http://localhost:5173",
+    origin: process.env.CLIENT_URL || "https://skillmatch121.vercel.app",
     methods: ["GET", "POST"]
   }
 });
