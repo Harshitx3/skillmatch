@@ -223,12 +223,16 @@ export default function Swipe() {
 
             <div>
               <label className="block text-xs text-gray-400 mb-1">Experience</label>
-              <input
+              <select
                 className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-sm"
-                placeholder="e.g. 2 years"
                 value={filters.experienceLevel}
                 onChange={e => setFilters({ ...filters, experienceLevel: e.target.value })}
-              />
+              >
+                <option value="">Any</option>
+                <option value="Beginner">Beginner</option>
+                <option value="Intermediate">Intermediate</option>
+                <option value="Advanced">Advanced</option>
+              </select>
             </div>
 
             <div>
@@ -240,8 +244,8 @@ export default function Swipe() {
               >
                 <option value="">Any</option>
                 <option value="hackathon">Hackathon Partner</option>
+                <option value="coding">Coding Buddy</option>
                 <option value="startup">Startup Co-founder</option>
-                <option value="practice">Practice Buddy</option>
               </select>
             </div>
 
@@ -370,6 +374,15 @@ export default function Swipe() {
 function UserCard({ user, isRequestSent, isMatched }) {
   const avatarUrl = user?.avatar || user?.avatarUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.name || "User"}&backgroundColor=ffdfbf`;
 
+  const getLookingForLabel = (val) => {
+    const labels = {
+      hackathon: "Hackathon Partner",
+      coding: "Coding Buddy",
+      startup: "Startup Co-founder"
+    };
+    return labels[val] || val;
+  };
+
   return (
     <div className="h-full flex flex-col">
       {/* Image Section - smaller on mobile */}
@@ -432,7 +445,7 @@ function UserCard({ user, isRequestSent, isMatched }) {
           {user?.lookingFor && (
             <span className="flex items-center gap-1.5 sm:gap-2 text-gray-400">
               <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-indigo-500 rounded-full"></span>
-              Looking for: {user.lookingFor}
+              Looking for: {getLookingForLabel(user.lookingFor)}
             </span>
           )}
         </div>

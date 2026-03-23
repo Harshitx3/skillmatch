@@ -77,6 +77,20 @@ async function start() {
       console.log("ℹ️ No old match indexes to drop or collection not yet initialized");
     }
 
+    // Migration: Update existing users to new enum values for lookingFor
+    try {
+      const UserColl = mongoose.connection.collection("users");
+      if (UserColl) {
+        // Update lookingFor values
+        await UserColl.updateMany({ lookingFor: "Hackathon Partner" }, { $set: { lookingFor: "hackathon" } });
+        await UserColl.updateMany({ lookingFor: "Startup Co-Founder" }, { $set: { lookingFor: "startup" } });
+        await UserColl.updateMany({ lookingFor: { $in: ["Practice Partner", "Practice Buddy"] } }, { $set: { lookingFor: "coding" } });
+        console.log("✅ Migrated existing user profiles to new enum values");
+      }
+    } catch (migrationError) {
+      console.log("❌ Migration failed:", migrationError.message);
+    }
+
     httpServer.listen(PORT, () => {
       console.log(`🚀 Server is running on http://localhost:${PORT}`);
     });

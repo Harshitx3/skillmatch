@@ -15,13 +15,14 @@ function useCountdown(startTime, durationMin) {
     useEffect(() => {
         if (!startTime) { setTimeLeft(null); return; }
         const endTime = new Date(startTime).getTime() + durationMin * 60 * 1000;
+        let timer;
         function tick() {
             const left = Math.max(0, endTime - Date.now());
             setTimeLeft(left);
-            if (left === 0) clearInterval(timer);
+            if (left === 0 && timer) clearInterval(timer);
         }
         tick();
-        const timer = setInterval(tick, 1000);
+        timer = setInterval(tick, 1000);
         return () => clearInterval(timer);
     }, [startTime, durationMin]);
     if (timeLeft === null) return null;

@@ -48,7 +48,7 @@ export default function Notifications() {
     const labels = {
       hackathon: "🏆 Hackathon Partner",
       startup: "🚀 Startup Co-Founder",
-      practice: "💻 Practice Buddy"
+      coding: "💻 Coding Buddy"
     };
     return labels[lookingFor] || lookingFor;
   };
@@ -57,7 +57,7 @@ export default function Notifications() {
     const colors = {
       hackathon: "bg-yellow-500/20 text-yellow-400 border-yellow-500/30",
       startup: "bg-green-500/20 text-green-400 border-green-500/30",
-      practice: "bg-blue-500/20 text-blue-400 border-blue-500/30"
+      coding: "bg-blue-500/20 text-blue-400 border-blue-500/30"
     };
     return colors[lookingFor] || "bg-gray-800 text-gray-400";
   };

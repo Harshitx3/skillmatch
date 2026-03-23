@@ -14,8 +14,8 @@ const userSchema = new mongoose.Schema(
     bio: { type: String },
     githubUsername: { type: String },
     leetcodeUsername: { type: String },
-    lookingFor: { type: String, enum: ["hackathon", "startup", "practice"] },
-    experienceLevel: { type: String },
+    lookingFor: { type: String, enum: ["hackathon", "coding", "startup"] },
+    experienceLevel: { type: String, enum: ["Beginner", "Intermediate", "Advanced"] },
     isAdmin: { type: Boolean, default: false },
     createdAt: { type: Date, default: Date.now }
   },

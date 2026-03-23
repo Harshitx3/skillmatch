@@ -407,21 +407,25 @@ export default function Profile() {
                   <div>
                     <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4">Looking For <span className="text-red-500">*</span></h3>
                     <div className="space-y-4">
-                      {["Hackathon Partner", "Startup Co-Founder", "Practice Partner"].map(option => (
-                        <label key={option} className="flex items-center gap-3 cursor-pointer group">
+                      {[
+                        { label: "Hackathon Partner", value: "hackathon" },
+                        { label: "Coding Buddy", value: "coding" },
+                        { label: "Startup Co-Founder", value: "startup" }
+                      ].map(option => (
+                        <label key={option.value} className="flex items-center gap-3 cursor-pointer group">
                           <div className="relative flex items-center justify-center w-5 h-5">
                             <input
                               required
                               type="radio"
                               name="lookingFor"
-                              value={option}
-                              checked={form.lookingFor === option}
+                              value={option.value}
+                              checked={form.lookingFor === option.value}
                               onChange={e => set("lookingFor", e.target.value)}
                               className="peer appearance-none w-5 h-5 border border-gray-600 rounded-full checked:border-violet-500 focus:outline-none transition-colors cursor-pointer"
                             />
                             <div className="absolute w-2.5 h-2.5 rounded-full bg-violet-500 scale-0 peer-checked:scale-100 transition-transform pointer-events-none" />
                           </div>
-                          <span className="text-sm text-gray-300 group-hover:text-white transition-colors">{option}</span>
+                          <span className="text-sm text-gray-300 group-hover:text-white transition-colors">{option.label}</span>
                         </label>
                       ))}
                     </div>
