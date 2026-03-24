@@ -36,5 +36,8 @@ app.use("/api/battles", battleRoutes);
 app.use((req, res) => {
   res.status(404).json({ error: "Not found" });
 });
+app.get("/",(req,res)=>{
+  res.send("Backend is live");
+});
 
 export default app;
