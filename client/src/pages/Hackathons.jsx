@@ -323,13 +323,13 @@ export default function Hackathons() {
             {/* Event Detail View */}
             {selectedEvent && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fade-in" onClick={() => setSelectedEvent(null)}>
-                    <div className="bg-white border border-gray-200 rounded-3xl w-full max-w-4xl max-h-[90vh] overflow-y-auto shadow-2xl animate-slide-up" onClick={(e) => e.stopPropagation()}>
+                    <div className="bg-[#161822] border border-gray-800 rounded-3xl w-full max-w-4xl max-h-[90vh] overflow-y-auto shadow-2xl animate-slide-up" onClick={(e) => e.stopPropagation()}>
                         {/* Header Image */}
-                        <div className="relative aspect-[21/9] w-full bg-gray-100">
+                        <div className="relative aspect-[21/9] w-full bg-gray-900/50">
                             {selectedEvent.image ? (
                                 <img src={selectedEvent.image} alt={selectedEvent.title} className="w-full h-full object-cover" />
                             ) : (
-                                <div className="w-full h-full flex items-center justify-center text-gray-300">
+                                <div className="w-full h-full flex items-center justify-center text-gray-700">
                                     <svg className="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                     </svg>
@@ -337,7 +337,7 @@ export default function Hackathons() {
                             )}
                             <button 
                                 onClick={() => setSelectedEvent(null)}
-                                className="absolute top-4 right-4 bg-white/80 hover:bg-white text-gray-900 p-2 rounded-full backdrop-blur-md shadow-lg transition"
+                                className="absolute top-4 right-4 bg-gray-900/40 hover:bg-gray-900/60 text-white p-2 rounded-full backdrop-blur-md transition"
                             >
                                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -348,61 +348,61 @@ export default function Hackathons() {
                         {/* Details */}
                         <div className="p-6 sm:p-10">
                             <div className="flex flex-wrap items-center gap-3 mb-6">
-                                <span className="text-xs font-bold uppercase tracking-widest bg-indigo-50 text-indigo-600 border border-indigo-100 px-4 py-1.5 rounded-full">
+                                <span className="text-xs font-bold uppercase tracking-widest bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 px-4 py-1.5 rounded-full">
                                     {selectedEvent.type || "Hackathon"}
                                 </span>
-                                <span className="text-xs font-bold uppercase tracking-widest bg-gray-50 text-gray-600 border border-gray-100 px-4 py-1.5 rounded-full">
+                                <span className="text-xs font-bold uppercase tracking-widest bg-gray-800 text-gray-400 border border-gray-700 px-4 py-1.5 rounded-full">
                                     {selectedEvent.mode}
                                 </span>
-                                <span className="text-xs font-bold uppercase tracking-widest bg-emerald-50 text-emerald-600 border border-emerald-100 px-4 py-1.5 rounded-full ml-auto">
+                                <span className="text-xs font-bold uppercase tracking-widest bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-4 py-1.5 rounded-full ml-auto">
                                     {daysLeft(selectedEvent.date)}
                                 </span>
                             </div>
 
-                            <h2 className="text-3xl sm:text-4xl font-black text-gray-900 mb-2">{selectedEvent.title}</h2>
-                            <p className="text-gray-500 text-sm mb-6">Organized by: <span className="text-indigo-600 font-bold">{selectedEvent.organization || "DevLink Community"}</span></p>
+                            <h2 className="text-3xl sm:text-4xl font-black text-white mb-2">{selectedEvent.title}</h2>
+                            <p className="text-gray-400 text-sm mb-6">Organized by: <span className="text-indigo-400 font-bold">{selectedEvent.organization || "DevLink Community"}</span></p>
                             
                             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-10">
-                                <div className="bg-gray-50 p-5 rounded-2xl border border-gray-100">
-                                    <p className="text-gray-400 text-[10px] uppercase font-bold tracking-wider mb-1">Date</p>
-                                    <p className="text-gray-900 font-bold">{formatDate(selectedEvent.date)}</p>
+                                <div className="bg-gray-800/40 p-5 rounded-2xl border border-gray-800">
+                                    <p className="text-gray-500 text-[10px] uppercase font-bold tracking-wider mb-1">Date</p>
+                                    <p className="text-white font-bold">{formatDate(selectedEvent.date)}</p>
                                 </div>
-                                <div className="bg-gray-50 p-5 rounded-2xl border border-gray-100">
-                                    <p className="text-gray-400 text-[10px] uppercase font-bold tracking-wider mb-1">Pricing</p>
-                                    <p className="text-gray-900 font-bold">{selectedEvent.price || "Free"}</p>
+                                <div className="bg-gray-800/40 p-5 rounded-2xl border border-gray-800">
+                                    <p className="text-gray-500 text-[10px] uppercase font-bold tracking-wider mb-1">Pricing</p>
+                                    <p className="text-white font-bold">{selectedEvent.price || "Free"}</p>
                                 </div>
-                                <div className="bg-gray-50 p-5 rounded-2xl border border-gray-100">
-                                    <p className="text-gray-400 text-[10px] uppercase font-bold tracking-wider mb-1">Team Size</p>
-                                    <p className="text-gray-900 font-bold">Up to {selectedEvent.teamSize} members</p>
+                                <div className="bg-gray-800/40 p-5 rounded-2xl border border-gray-800">
+                                    <p className="text-gray-500 text-[10px] uppercase font-bold tracking-wider mb-1">Team Size</p>
+                                    <p className="text-white font-bold">Up to {selectedEvent.teamSize} members</p>
                                 </div>
-                                <div className="bg-gray-50 p-5 rounded-2xl border border-gray-100">
-                                    <p className="text-gray-400 text-[10px] uppercase font-bold tracking-wider mb-1">Location</p>
-                                    <p className="text-gray-900 font-bold truncate">{selectedEvent.location || (selectedEvent.mode === "online" ? "Virtual" : "TBA")}</p>
+                                <div className="bg-gray-800/40 p-5 rounded-2xl border border-gray-800">
+                                    <p className="text-gray-500 text-[10px] uppercase font-bold tracking-wider mb-1">Location</p>
+                                    <p className="text-white font-bold truncate">{selectedEvent.location || (selectedEvent.mode === "online" ? "Virtual" : "TBA")}</p>
                                 </div>
                             </div>
 
-                            <div className="prose max-w-none">
-                                <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+                            <div className="prose prose-invert max-w-none">
+                                <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
                                     <div className="w-1.5 h-6 bg-indigo-600 rounded-full"></div>
                                     About the Event
                                 </h3>
-                                <p className="text-gray-600 whitespace-pre-wrap leading-relaxed">
+                                <p className="text-gray-400 whitespace-pre-wrap leading-relaxed">
                                     {selectedEvent.description}
                                 </p>
                             </div>
 
-                            <div className="mt-10 pt-10 border-t border-gray-100 flex flex-col sm:flex-row gap-4">
+                            <div className="mt-10 pt-10 border-t border-gray-800 flex flex-col sm:flex-row gap-4">
                                 {selectedEvent.registrationLink ? (
                                     <a
                                         href={selectedEvent.registrationLink}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="flex-1 text-center py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-black rounded-2xl transition shadow-xl shadow-indigo-200"
+                                        className="flex-1 text-center py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-black rounded-2xl transition shadow-xl shadow-indigo-600/20"
                                     >
                                         Register Now
                                     </a>
                                 ) : (
-                                    <button disabled className="flex-1 py-4 bg-gray-100 text-gray-400 font-bold rounded-2xl cursor-not-allowed">
+                                    <button disabled className="flex-1 py-4 bg-gray-800 text-gray-500 font-bold rounded-2xl cursor-not-allowed">
                                         Registration Closed
                                     </button>
                                 )}
@@ -411,7 +411,7 @@ export default function Hackathons() {
                                         setSelectedEvent(null);
                                         navigate("/discover?lookingFor=hackathon");
                                     }}
-                                    className="flex-1 py-4 bg-white hover:bg-gray-50 text-indigo-600 border-2 border-indigo-600 font-black rounded-2xl transition"
+                                    className="flex-1 py-4 bg-gray-800 hover:bg-gray-700 text-white border border-gray-700 font-black rounded-2xl transition"
                                 >
                                     Find a Team
                                 </button>
