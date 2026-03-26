@@ -110,17 +110,17 @@ export default function Hackathons() {
                         placeholder="Search hackathons..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full bg-white border border-gray-200 rounded-full px-12 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-indigo-500 shadow-sm transition"
+                        className="w-full bg-[#161822] border border-gray-800 rounded-full px-12 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 shadow-sm transition"
                     />
-                    <svg className="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                     </svg>
                 </div>
 
-                <div className="flex items-center gap-3 overflow-x-auto pb-2 no-scrollbar">
+                <div className="flex items-center gap-3">
                     <button
                         onClick={() => setShowFilters(!showFilters)}
-                        className={`flex items-center gap-2 px-4 py-2 rounded-full border text-sm font-medium whitespace-nowrap transition shadow-sm ${showFilters ? "bg-indigo-600 border-indigo-600 text-white" : "bg-white border-gray-200 text-gray-700 hover:bg-gray-50"}`}
+                        className={`flex items-center gap-2 px-5 py-2.5 rounded-full border text-sm font-medium whitespace-nowrap transition shadow-sm ${showFilters ? "bg-indigo-600 border-indigo-600 text-white" : "bg-[#161822] border-gray-800 text-gray-300 hover:border-gray-700 hover:bg-[#1f2233]"}`}
                     >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
@@ -128,39 +128,22 @@ export default function Hackathons() {
                         Filters
                         <span className="flex items-center justify-center w-5 h-5 bg-indigo-500 text-white text-[10px] rounded-full">1</span>
                     </button>
-
-                    {[
-                        { label: "Team Size", value: filterType },
-                        { label: "Payment", value: filterPrice },
-                        { label: "Categories", value: "All" },
-                        { label: "Sort By", value: "Newest" }
-                    ].map((f, i) => (
-                        <button
-                            key={i}
-                            className="flex items-center gap-2 px-4 py-2 rounded-full border border-gray-200 bg-white text-gray-700 text-sm font-medium whitespace-nowrap hover:bg-gray-50 transition shadow-sm"
-                        >
-                            <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                            </svg>
-                            {f.label}
-                        </button>
-                    ))}
                 </div>
             </div>
 
-            {/* Filter Panel (Modified for white theme) */}
+            {/* Filter Panel (Dark Theme) */}
             {showFilters && (
-                <div className="mb-8 p-6 bg-white border border-gray-200 rounded-2xl shadow-sm animate-fade-in">
+                <div className="mb-8 p-6 bg-[#161822] border border-gray-800 rounded-2xl shadow-xl animate-fade-in">
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                         {/* Type Filter */}
                         <div>
-                            <label className="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-3">Event Type</label>
+                            <label className="block text-xs font-bold uppercase tracking-widest text-gray-500 mb-3">Event Type</label>
                             <div className="flex flex-wrap gap-2">
                                 {types.map(t => (
                                     <button
                                         key={t}
                                         onClick={() => setFilterType(t)}
-                                        className={`px-3 py-1.5 rounded-lg text-xs font-medium transition ${filterType === t ? "bg-indigo-600 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}
+                                        className={`px-3 py-1.5 rounded-lg text-xs font-medium transition ${filterType === t ? "bg-indigo-600 text-white" : "bg-gray-800/50 text-gray-400 hover:bg-gray-800"}`}
                                     >
                                         {t}
                                     </button>
@@ -170,13 +153,13 @@ export default function Hackathons() {
 
                         {/* Mode Filter */}
                         <div>
-                            <label className="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-3">Mode</label>
+                            <label className="block text-xs font-bold uppercase tracking-widest text-gray-500 mb-3">Mode</label>
                             <div className="flex gap-2">
                                 {["All", "online", "offline"].map(m => (
                                     <button
                                         key={m}
                                         onClick={() => setFilterMode(m)}
-                                        className={`flex-1 px-3 py-1.5 rounded-lg text-xs font-medium capitalize transition ${filterMode === m ? "bg-indigo-600 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}
+                                        className={`flex-1 px-3 py-1.5 rounded-lg text-xs font-medium capitalize transition ${filterMode === m ? "bg-indigo-600 text-white" : "bg-gray-800/50 text-gray-400 hover:bg-gray-800"}`}
                                     >
                                         {m}
                                     </button>
@@ -186,13 +169,13 @@ export default function Hackathons() {
 
                         {/* Price Filter */}
                         <div>
-                            <label className="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-3">Pricing</label>
+                            <label className="block text-xs font-bold uppercase tracking-widest text-gray-500 mb-3">Pricing</label>
                             <div className="flex gap-2">
                                 {["All", "Free", "Paid"].map(p => (
                                     <button
                                         key={p}
                                         onClick={() => setFilterPrice(p)}
-                                        className={`flex-1 px-3 py-1.5 rounded-lg text-xs font-medium transition ${filterPrice === p ? "bg-indigo-600 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}
+                                        className={`flex-1 px-3 py-1.5 rounded-lg text-xs font-medium transition ${filterPrice === p ? "bg-indigo-600 text-white" : "bg-gray-800/50 text-gray-400 hover:bg-gray-800"}`}
                                     >
                                         {p}
                                     </button>
@@ -201,7 +184,7 @@ export default function Hackathons() {
                         </div>
                     </div>
 
-                    <div className="mt-6 pt-6 border-t border-gray-100 flex justify-end">
+                    <div className="mt-6 pt-6 border-t border-gray-800 flex justify-end">
                         <button
                             onClick={() => {
                                 setFilterType("All");
@@ -209,7 +192,7 @@ export default function Hackathons() {
                                 setFilterPrice("All");
                                 setSearchTerm("");
                             }}
-                            className="text-xs font-bold text-gray-400 hover:text-indigo-600 transition uppercase tracking-widest"
+                            className="text-xs font-bold text-gray-500 hover:text-indigo-400 transition uppercase tracking-widest"
                         >
                             Reset All Filters
                         </button>
@@ -248,14 +231,14 @@ export default function Hackathons() {
                             <div
                                 key={ev._id}
                                 onClick={() => setSelectedEvent(ev)}
-                                className="group bg-white border border-gray-200 rounded-2xl overflow-hidden hover:border-indigo-300 transition-all duration-300 cursor-pointer p-6 flex flex-col shadow-sm"
+                                className="group bg-[#161822] border border-gray-800 rounded-2xl overflow-hidden hover:border-indigo-500/50 transition-all duration-300 cursor-pointer p-6 flex flex-col shadow-lg"
                             >
                                 <div className="flex justify-between items-start gap-4">
                                     <div className="flex-1 min-w-0">
-                                        <h3 className="text-xl font-bold text-gray-900 group-hover:text-indigo-600 transition truncate">
+                                        <h3 className="text-xl font-bold text-white group-hover:text-indigo-400 transition truncate">
                                             {ev.title}
                                         </h3>
-                                        <p className="text-gray-600 text-sm font-medium mt-1 truncate">
+                                        <p className="text-gray-400 text-sm font-medium mt-1 truncate">
                                             {ev.organization || "DevLink Community"}
                                         </p>
 
@@ -271,17 +254,17 @@ export default function Hackathons() {
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                                                 </svg>
-                                                <span className="line-clamp-2">{ev.location || (ev.mode === "online" ? "Online" : "To be announced")}</span>
+                                                <span className="line-clamp-2 text-gray-400">{ev.location || (ev.mode === "online" ? "Online" : "To be announced")}</span>
                                             </div>
                                         </div>
                                     </div>
 
                                     {/* Event Logo */}
-                                    <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gray-50 border border-gray-100 rounded-xl overflow-hidden flex-shrink-0">
+                                    <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gray-900/50 border border-gray-800 rounded-xl overflow-hidden flex-shrink-0">
                                         {ev.image ? (
                                             <img src={ev.image} alt={ev.title} className="w-full h-full object-cover" />
                                         ) : (
-                                            <div className="w-full h-full flex items-center justify-center text-gray-300">
+                                            <div className="w-full h-full flex items-center justify-center text-gray-700">
                                                 <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                                 </svg>
@@ -292,26 +275,26 @@ export default function Hackathons() {
 
                                 {/* Tags */}
                                 <div className="mt-6 flex flex-wrap gap-2">
-                                    <span className="px-3 py-1 bg-gray-100 text-gray-600 rounded-full text-[11px] font-medium border border-gray-200">
+                                    <span className="px-3 py-1 bg-gray-800 text-gray-400 rounded-full text-[11px] font-medium border border-gray-700">
                                         {ev.type || "Hackathon"}
                                     </span>
                                     {ev.price && (
-                                        <span className={`px-3 py-1 rounded-full text-[11px] font-medium border ${ev.price === "Paid" ? "bg-amber-50 text-amber-600 border-amber-100" : "bg-emerald-50 text-emerald-600 border-emerald-100"}`}>
+                                        <span className={`px-3 py-1 rounded-full text-[11px] font-medium border ${ev.price === "Paid" ? "bg-amber-500/10 text-amber-500 border-amber-500/20" : "bg-emerald-500/10 text-emerald-500 border-emerald-500/20"}`}>
                                             {ev.price}
                                         </span>
                                     )}
                                     {ev.skills && ev.skills.slice(0, 3).map((skill, idx) => (
-                                        <span key={idx} className="px-3 py-1 bg-gray-100 text-gray-600 rounded-full text-[11px] font-medium border border-gray-200">
+                                        <span key={idx} className="px-3 py-1 bg-gray-800 text-gray-400 rounded-full text-[11px] font-medium border border-gray-700">
                                             {skill}
                                         </span>
                                     ))}
                                 </div>
 
                                 {/* Footer */}
-                                <div className="mt-6 pt-6 border-t border-gray-100 flex items-center justify-between">
+                                <div className="mt-6 pt-6 border-t border-gray-800 flex items-center justify-between">
                                     <div className="flex items-center gap-4 text-xs font-medium">
-                                        <span className="text-gray-400">Posted {formatDate(ev.createdAt || ev.date)}</span>
-                                        <div className="flex items-center gap-1.5 text-gray-600">
+                                        <span className="text-gray-500">Posted {formatDate(ev.createdAt || ev.date)}</span>
+                                        <div className="flex items-center gap-1.5 text-gray-400">
                                             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                                             </svg>
@@ -319,12 +302,12 @@ export default function Hackathons() {
                                         </div>
                                     </div>
                                     <div className="flex items-center gap-3">
-                                        <button className="p-2 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-full transition">
+                                        <button className="p-2 text-gray-500 hover:text-indigo-400 hover:bg-gray-800 rounded-full transition">
                                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
                                             </svg>
                                         </button>
-                                        <button className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-full transition">
+                                        <button className="p-2 text-gray-500 hover:text-red-500 hover:bg-gray-800 rounded-full transition">
                                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                                             </svg>
