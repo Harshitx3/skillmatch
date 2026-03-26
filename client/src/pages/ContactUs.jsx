@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import api from "../lib/api.js";
+import axios from 'axios';
 import contactImage from "../assets/ContactUs.png";
 
 const SendIcon = () => (
@@ -47,11 +47,12 @@ export default function ContactUs() {
         e.preventDefault();
         setSending(true);
         try {
-            await api.post('/api/contact', formData);
+            await axios.post('/api/contact', formData);
             setSubmitted(true);
         } catch (error) {
             console.error('Error submitting form:', error);
-            alert('Failed to send message. Please try again.');
+            const errMsg = error.response?.data?.message || error.message || 'Failed to send message. Please try again.';
+            alert(errMsg);
         } finally {
             setSending(false);
         }
