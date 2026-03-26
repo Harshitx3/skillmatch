@@ -16,9 +16,8 @@ dotenv.config();
 const app = express();
 
 app.use(cors({
-  origin: process.env.CLIENT_URL || "https://skillmatch121.vercel.app",
-  credentials: true
-}));
+  origin: "*"
+})); // Allow all origins for debugging CORS issues in production
 app.use(express.json());
 app.use(morgan("dev"));
 
