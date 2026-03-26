@@ -265,19 +265,38 @@ export default function Profile() {
             </div>
 
             <div className="space-y-4 pt-6 border-t border-gray-800">
-              <div className="flex items-center text-sm text-gray-400 gap-3">
-                <GithubIcon />
-                <span className="truncate">{form.githubUsername ? `github.com/${form.githubUsername}` : "github.com/arivera-dev"}</span>
-              </div>
-              <div className="flex items-center text-sm text-gray-400 gap-3">
-                <LeetCodeIcon />
-                <span className="truncate">{form.leetcodeUsername ? `leetcode.com/${form.leetcodeUsername}` : "leetcode.com/arivera"}</span>
-              </div>
+              {form.githubUsername && (
+                <a
+                  href={`https://github.com/${form.githubUsername}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center text-sm text-gray-400 gap-3 hover:text-white transition-colors"
+                >
+                  <GithubIcon />
+                  <span className="truncate">{`github.com/${form.githubUsername}`}</span>
+                </a>
+              )}
+              {form.leetcodeUsername && (
+                <a
+                  href={`https://leetcode.com/${form.leetcodeUsername}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center text-sm text-gray-400 gap-3 hover:text-white transition-colors"
+                >
+                  <LeetCodeIcon />
+                  <span className="truncate">{`leetcode.com/${form.leetcodeUsername}`}</span>
+                </a>
+              )}
               {form.linkedin && (
-                <div className="flex items-center text-sm text-gray-400 gap-3">
+                <a
+                  href={form.linkedin.startsWith('http') ? form.linkedin : `https://${form.linkedin}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center text-sm text-gray-400 gap-3 hover:text-white transition-colors"
+                >
                   <LinkedinIcon />
                   <span className="truncate">{form.linkedin}</span>
-                </div>
+                </a>
               )}
             </div>
           </div>
