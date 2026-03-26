@@ -24,6 +24,7 @@ export default function Profile() {
     bio: "",
     githubUsername: "",
     leetcodeUsername: "",
+    linkedin: "",
     lookingFor: "",
     experienceLevel: "",
     avatar: ""
@@ -111,6 +112,7 @@ export default function Profile() {
       bio: form.bio,
       githubUsername: form.githubUsername,
       leetcodeUsername: form.leetcodeUsername,
+      linkedin: form.linkedin,
       lookingFor: form.lookingFor,
       experienceLevel: form.experienceLevel,
       avatar: form.avatar // Include avatar URL
@@ -396,6 +398,14 @@ export default function Profile() {
                       value={form.leetcodeUsername} onChange={e => set("leetcodeUsername", e.target.value)}
                     />
                   </div>
+                </div>
+                <div class="mt-4 md:mt-5">
+                  <label className="block text-xs font-medium text-gray-400 mb-2">LinkedIn Profile</label>
+                  <input
+                    className="w-full px-4 py-2 bg-[#0B0F19] border border-gray-800 rounded-md text-sm text-white focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-colors"
+                    placeholder="linkedin.com/in/username"
+                    value={form.linkedin} onChange={e => set("linkedin", e.target.value)}
+                  />
                 </div>
               </section>
 

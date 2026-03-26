@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from 'axios';
 import contactImage from "../assets/ContactUs.png";
 
 const SendIcon = () => (
@@ -41,12 +42,25 @@ export default function ContactUs() {
     });
     const [submitted, setSubmitted] = useState(false);
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        setSubmitted(true);
-        setTimeout(() => setSubmitted(false), 3000);
-        setFormData({ name: "", email: "", subject: "General Inquiry", message: "" });
+        try {
+            await axios.post('/api/contact', formData);
+            setSubmitted(true);
+        } catch (error) {
+            console.error('Error submitting form:', error);
+        }
     };
+
+    useEffect(() => {
+        if (submitted) {
+            const timer = setTimeout(() => {
+                setSubmitted(false);
+                setFormData({ name: "", email: "", subject: "General Inquiry", message: "" });
+            }, 3000);
+            return () => clearTimeout(timer);
+        }
+    }, [submitted]);
 
     return (
         <div className="min-h-screen bg-[#0f111a] text-gray-100 font-sans selection:bg-violet-500/30 pb-20">

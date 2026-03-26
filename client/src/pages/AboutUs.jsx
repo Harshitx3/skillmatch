@@ -66,17 +66,7 @@ export default function AboutUs() {
                     find your perfect coding partner on DevLink.
                 </p>
                 
-                <div className="relative flex flex-col sm:flex-row items-center justify-center gap-3 md:gap-4 px-4 w-full sm:w-auto">
-                    <button className="w-full sm:w-auto px-6 md:px-8 py-3.5 rounded-full bg-violet-600 hover:bg-violet-500 text-white font-medium transition-all shadow-[0_0_20px_rgba(139,92,246,0.3)] hover:shadow-[0_0_25px_rgba(139,92,246,0.5)]">
-                        Explore Developers
-                    </button>
-                    <button 
-                        onClick={() => navigate('/profile')} 
-                        className="w-full sm:w-auto px-6 md:px-8 py-3.5 rounded-full bg-[#161822] hover:bg-[#1f2233] border border-gray-800 text-gray-300 font-medium transition-all"
-                    >
-                        Create Profile
-                    </button>
-                </div>
+
             </section>
 
             {/* Mission Section */}
@@ -98,6 +88,76 @@ export default function AboutUs() {
                                 className="w-full h-full object-cover rounded-2xl transition-transform duration-700 group-hover:scale-105"
                             />
                             <div className="absolute inset-0 rounded-2xl ring-1 ring-inset ring-white/10 pointer-events-none"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* How It Works Section */}
+            <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24 border-t border-gray-800/50">
+                <div className="text-center mb-10 md:mb-16">
+                    <h2 className="text-3xl md:text-4xl font-bold text-white mb-3 md:mb-4">How It Works</h2>
+                    <p className="text-gray-400 text-base md:text-lg">A simple process to connect with your future partner.</p>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+                    <div className="flex flex-col items-center">
+                        <div className="w-16 h-16 bg-violet-500/10 rounded-full flex items-center justify-center mb-4 border border-violet-500/20">
+                            <span className="text-2xl font-bold text-violet-400">1</span>
+                        </div>
+                        <h3 className="text-xl font-bold text-white mb-2">Create Your Profile</h3>
+                        <p className="text-gray-400 text-sm">Sign up and build a profile that showcases your skills, projects, and what you're looking for in a collaborator.</p>
+                    </div>
+                    <div className="flex flex-col items-center">
+                        <div className="w-16 h-16 bg-violet-500/10 rounded-full flex items-center justify-center mb-4 border border-violet-500/20">
+                            <span className="text-2xl font-bold text-violet-400">2</span>
+                        </div>
+                        <h3 className="text-xl font-bold text-white mb-2">Discover & Match</h3>
+                        <p className="text-gray-400 text-sm">Explore profiles of other developers. Our smart matching algorithm helps you find the right fit based on your interests and needs.</p>
+                    </div>
+                    <div className="flex flex-col items-center">
+                        <div className="w-16 h-16 bg-violet-500/10 rounded-full flex items-center justify-center mb-4 border border-violet-500/20">
+                            <span className="text-2xl font-bold text-violet-400">3</span>
+                        </div>
+                        <h3 className="text-xl font-bold text-white mb-2">Start Collaborating</h3>
+                        <p className="text-gray-400 text-sm">Connect with your match, discuss ideas, and start building something amazing together using our integrated tools.</p>
+                    </div>
+                </div>
+            </section>
+
+            {/* Core Features Section */}
+            <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24 border-t border-gray-800/50">
+                <div className="text-center mb-10 md:mb-16">
+                    <h2 className="text-3xl md:text-4xl font-bold text-white mb-3 md:mb-4">Core Features</h2>
+                    <p className="text-gray-400 text-base md:text-lg">Everything you need to find a partner and build your next project.</p>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+                    <div className="bg-[#161822] border border-gray-800/80 rounded-2xl p-8">
+                        <h3 className="text-xl font-bold text-white mb-3">Hackathons</h3>
+                        <p className="text-gray-400 leading-relaxed text-sm">Participate in hackathons to challenge yourself, learn new skills, and meet potential collaborators in a competitive and fun environment.</p>
+                    </div>
+                    <div className="bg-[#161822] border border-gray-800/80 rounded-2xl p-8">
+                        <h3 className="text-xl font-bold text-white mb-3">Battles</h3>
+                        <p className="text-gray-400 leading-relaxed text-sm">Engage in one-on-one coding battles to sharpen your problem-solving skills and see how you stack up against other developers.</p>
+                    </div>
+                    <div className="bg-[#161822] border border-gray-800/80 rounded-2xl p-8">
+                        <h3 className="text-xl font-bold text-white mb-3">Smart Matching</h3>
+                        <p className="text-gray-400 leading-relaxed text-sm">Our AI-driven engine pairs you with developers whose stack and interests align perfectly with your project needs.</p>
+                    </div>
+                </div>
+            </section>
+
+            {/* Our Story Section */}
+            <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24 border-t border-gray-800/50">
+                <div className="flex flex-col lg:flex-row items-center gap-10 md:gap-16">
+                    <div className="flex-1 space-y-4 md:space-y-6 text-center lg:text-left">
+                        <h2 className="text-3xl md:text-4xl font-bold text-white">Our Story</h2>
+                        <p className="text-gray-400 text-base md:text-lg leading-relaxed">
+                            DevLink was born from a simple observation: brilliant developers with great ideas often struggle to find the right people to turn those ideas into reality. We experienced this firsthand, and we knew there had to be a better way. Our goal is to create a platform that not only connects developers but also empowers them to build the future of technology, together.
+                        </p>
+                    </div>
+                    <div className="flex-1 w-full max-w-2xl mx-auto">
+                        <div className="bg-[#161822] border border-gray-800 rounded-2xl aspect-video flex items-center justify-center relative overflow-hidden shadow-[0_0_30px_rgba(139,92,246,0.15)]">
+                           <p className="text-gray-400">The DevLink Team</p>
                         </div>
                     </div>
                 </div>

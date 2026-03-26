@@ -89,6 +89,7 @@ export async function updateProfile(req, res) {
       "bio",
       "githubUsername",
       "leetcodeUsername",
+      "linkedin",
       "lookingFor",
       "experienceLevel",
       "avatar"
