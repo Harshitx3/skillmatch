@@ -1,6 +1,6 @@
-const nodemailer = require('nodemailer');
+import nodemailer from 'nodemailer';
 
-const sendContactEmail = async (req, res) => {
+export const sendContactEmail = async (req, res) => {
     const { name, email, subject, message } = req.body;
 
     const transporter = nodemailer.createTransport({
@@ -27,5 +27,3 @@ const sendContactEmail = async (req, res) => {
         res.status(500).json({ message: 'Error sending email' });
     }
 };
-
-module.exports = { sendContactEmail };
