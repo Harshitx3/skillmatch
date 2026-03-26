@@ -67,6 +67,7 @@ export default function MyHackathons() {
         setEditingEvent(event._id);
         setEditForm({
             title: event.title,
+            organization: event.organization || "",
             description: event.description,
             date: event.date?.split('T')[0],
             mode: event.mode,
@@ -236,6 +237,12 @@ export default function MyHackathons() {
                                                     placeholder="Title"
                                                 />
                                             </div>
+                                            <input
+                                                value={editForm.organization}
+                                                onChange={e => setEditForm({ ...editForm, organization: e.target.value })}
+                                                className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white text-sm"
+                                                placeholder="Organization / College / Community"
+                                            />
                                             <textarea
                                                 value={editForm.description}
                                                 onChange={e => setEditForm({ ...editForm, description: e.target.value })}
@@ -309,6 +316,9 @@ export default function MyHackathons() {
                                     <div className="flex-1">
                                         <div className="flex flex-wrap items-center gap-2 mb-2">
                                             <h3 className="font-bold text-white text-lg">{ev.title}</h3>
+                                            <span className="text-indigo-400 text-sm font-medium border-l border-gray-700 pl-2 ml-1">
+                                                {ev.organization || "DevLink Community"}
+                                            </span>
                                             <span className={`text-xs px-2 py-0.5 rounded-full border capitalize ${STATUS_COLORS[ev.status]}`}>
                                                 {ev.status === "pending" ? "⏳ Pending" : ev.status === "approved" ? "✅ Approved" : "❌ Rejected"}
                                             </span>

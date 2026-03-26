@@ -359,7 +359,8 @@ export default function Hackathons() {
                                 </span>
                             </div>
 
-                            <h2 className="text-3xl sm:text-4xl font-black text-gray-900 mb-6">{selectedEvent.title}</h2>
+                            <h2 className="text-3xl sm:text-4xl font-black text-gray-900 mb-2">{selectedEvent.title}</h2>
+                            <p className="text-gray-500 text-sm mb-6">Organized by: <span className="text-indigo-600 font-bold">{selectedEvent.organization || "DevLink Community"}</span></p>
                             
                             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-10">
                                 <div className="bg-gray-50 p-5 rounded-2xl border border-gray-100">

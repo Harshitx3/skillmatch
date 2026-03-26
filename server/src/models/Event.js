@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 
 const eventSchema = new mongoose.Schema({
     title: { type: String, required: true, trim: true },
+    organization: { type: String, default: "" },
     description: { type: String, required: true },
     type: { type: String, default: "hackathon" },
     date: { type: Date, required: true },

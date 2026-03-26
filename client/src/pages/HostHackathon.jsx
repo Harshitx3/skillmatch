@@ -6,6 +6,7 @@ export default function HostHackathon() {
     const navigate = useNavigate();
     const [form, setForm] = useState({
         title: "",
+        organization: "",
         description: "",
         date: "",
         mode: "online",
@@ -230,6 +231,19 @@ export default function HostHackathon() {
                             className="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 transition"
                         />
                     </div>
+                </div>
+
+                {/* Organization */}
+                <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-1.5">Organization / College / Community *</label>
+                    <input
+                        name="organization"
+                        value={form.organization}
+                        onChange={handleChange}
+                        required
+                        placeholder="e.g. Stanford University, Google Developer Group, etc."
+                        className="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 transition"
+                    />
                 </div>
 
                 {/* Description */}

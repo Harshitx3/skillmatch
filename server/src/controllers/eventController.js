@@ -3,12 +3,13 @@ import Event from "../models/Event.js";
 // POST /api/events/create - submit hackathon (any logged-in user)
 export async function createEvent(req, res) {
     try {
-        const { title, description, date, mode, location, registrationLink, teamSize, image, type, price } = req.body;
+        const { title, organization, description, date, mode, location, registrationLink, teamSize, image, type, price } = req.body;
         if (!title || !description || !date || !mode) {
             return res.status(400).json({ error: "title, description, date, and mode are required" });
         }
         const event = await Event.create({
             title,
+            organization: organization || "",
             description,
             date,
             mode,
@@ -112,11 +113,12 @@ export async function getMyEvents(req, res) {
 // PUT /api/events/:id - update user's own event
 export async function updateEvent(req, res) {
     try {
-        const { title, description, date, mode, location, registrationLink, teamSize, image, type, price } = req.body;
+        const { title, organization, description, date, mode, location, registrationLink, teamSize, image, type, price } = req.body;
         const event = await Event.findOne({ _id: req.params.id, createdBy: req.userId });
         if (!event) return res.status(404).json({ error: "Event not found or not authorized" });
 
         event.title = title || event.title;
+        event.organization = organization !== undefined ? organization : event.organization;
         event.description = description || event.description;
         event.date = date || event.date;
         event.mode = mode || event.mode;
