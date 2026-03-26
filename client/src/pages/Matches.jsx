@@ -183,7 +183,7 @@ export default function Matches() {
                   <a
                     target="_blank"
                     rel="noopener noreferrer"
-                    href={u.linkedin}
+                    href={`https://linkedin.com/in/${u.linkedin}`}
                     className="flex items-center gap-2 text-sm text-gray-300 hover:text-indigo-400 transition"
                   >
                     <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">

@@ -289,13 +289,13 @@ export default function Profile() {
               )}
               {form.linkedin && (
                 <a
-                  href={form.linkedin.startsWith('http') ? form.linkedin : `https://${form.linkedin}`}
+                  href={`https://linkedin.com/in/${form.linkedin}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center text-sm text-gray-400 gap-3 hover:text-white transition-colors"
                 >
                   <LinkedinIcon />
-                  <span className="truncate">{form.linkedin}</span>
+                  <span className="truncate">{`linkedin.com/in/${form.linkedin}`}</span>
                 </a>
               )}
             </div>
@@ -431,10 +431,10 @@ export default function Profile() {
                   </div>
                 </div>
                 <div class="mt-4 md:mt-5">
-                  <label className="block text-xs font-medium text-gray-400 mb-2">LinkedIn Profile</label>
+                  <label className="block text-xs font-medium text-gray-400 mb-2">LinkedIn Username</label>
                   <input
                     className="w-full px-4 py-2 bg-[#0B0F19] border border-gray-800 rounded-md text-sm text-white focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-colors"
-                    placeholder="linkedin.com/in/username"
+                    placeholder="johndoe"
                     value={form.linkedin} onChange={e => set("linkedin", e.target.value)}
                   />
                 </div>
