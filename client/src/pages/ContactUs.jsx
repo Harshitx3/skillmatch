@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from 'axios';
+import api from "../lib/api.js";
 import contactImage from "../assets/ContactUs.png";
 
 const SendIcon = () => (
@@ -41,14 +41,19 @@ export default function ContactUs() {
         message: ""
     });
     const [submitted, setSubmitted] = useState(false);
+    const [sending, setSending] = useState(false);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setSending(true);
         try {
-            await axios.post('/api/contact', formData);
+            await api.post('/api/contact', formData);
             setSubmitted(true);
         } catch (error) {
             console.error('Error submitting form:', error);
+            alert('Failed to send message. Please try again.');
+        } finally {
+            setSending(false);
         }
     };
 
@@ -166,9 +171,18 @@ export default function ContactUs() {
                             
                             <button
                                 type="submit"
-                                className="w-full py-3.5 bg-gradient-to-r from-purple-500 to-violet-600 hover:from-purple-400 hover:to-violet-500 rounded-lg font-medium text-white transition-all shadow-[0_0_15px_rgba(139,92,246,0.3)] hover:shadow-[0_0_25px_rgba(139,92,246,0.5)] flex items-center justify-center gap-2"
+                                disabled={sending}
+                                className={`w-full py-3.5 bg-gradient-to-r from-purple-500 to-violet-600 hover:from-purple-400 hover:to-violet-500 rounded-lg font-medium text-white transition-all shadow-[0_0_15px_rgba(139,92,246,0.3)] hover:shadow-[0_0_25px_rgba(139,92,246,0.5)] flex items-center justify-center gap-2 ${sending ? 'opacity-70 cursor-not-allowed' : ''}`}
                             >
-                                Send Message <span className="font-serif italic font-bold text-lg leading-none">›</span>
+                                {sending ? (
+                                    <>
+                                        Sending... <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                                    </>
+                                ) : (
+                                    <>
+                                        Send Message <span className="font-serif italic font-bold text-lg leading-none">›</span>
+                                    </>
+                                )}
                             </button>
                         </form>
                     )}
