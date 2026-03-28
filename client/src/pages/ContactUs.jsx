@@ -77,7 +77,7 @@ export default function ContactUs() {
                 
                 <span className="inline-block py-1 pr-3 pl-2 mb-6 rounded-full bg-slate-800/80 border border-slate-700/50 text-xs font-semibold tracking-widest text-gray-400 uppercase shadow-sm">
                     <span className="inline-block w-2 h-2 rounded-full bg-purple-500 mr-2 animate-pulse"></span>
-                    Contact DevLink
+                    Contact NodeMatch
                 </span>
 
                 <h1 className="relative text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight mb-4 md:mb-6">
@@ -193,7 +193,7 @@ export default function ContactUs() {
             {/* Social Links Section */}
             <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 border-b border-gray-800/30">
                 <div className="text-center mb-8">
-                    <h2 className="text-lg font-bold text-white mb-2">Join the DevLink Ecosystem</h2>
+                    <h2 className="text-lg font-bold text-white mb-2">Join the NodeMatch Ecosystem</h2>
                 </div>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
                     {/* GitHub */}

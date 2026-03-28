@@ -13,7 +13,7 @@ export async function getMatches(req, res) {
       .filter(Boolean);
       
     const users = await User.find({ _id: { $in: otherIds } })
-      .select("name username email avatar githubUsername leetcodeUsername linkedin college skills lookingFor experienceLevel bio")
+      .select("name username email avatar githubUsername leetcodeUsername linkedin instagram college skills lookingFor experienceLevel bio")
       .lean();
       
     res.json(users);

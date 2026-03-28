@@ -7,7 +7,7 @@ export default function Footer() {
         {/* Brand Section */}
         <div className="space-y-4">
           <Link to="/" className="text-2xl font-bold bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent">
-            DevLink
+            NodeMatch
           </Link>
           <p className="text-gray-400 text-sm leading-relaxed">
             The developer-first platform to find co-founders, hackathon partners, and open-source collaborators. 
@@ -60,7 +60,7 @@ export default function Footer() {
 
       <div className="max-w-7xl mx-auto border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
         <p className="text-gray-500 text-sm">
-          &copy; {new Date().getFullYear()} DevLink. Built for developers by developers.
+          &copy; {new Date().getFullYear()} NodeMatch. Built for developers by developers.
         </p>
         <div className="flex gap-6">
           <a href="#" className="text-gray-500 hover:text-white transition text-sm">Terms</a>

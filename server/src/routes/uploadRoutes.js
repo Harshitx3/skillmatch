@@ -32,7 +32,7 @@ router.post('/profile-image', authMiddleware, upload.single('image'), async (req
 
         // Upload to Cloudinary
         const result = await cloudinary.uploader.upload(dataURI, {
-            folder: 'devlink/profiles',
+            folder: 'nodematch/profiles',
             public_id: `user_${req.userId}_${Date.now()}`,
             transformation: [
                 { width: 400, height: 400, crop: 'fill', gravity: 'face' },
@@ -62,7 +62,7 @@ router.post('/event-image', authMiddleware, upload.single('image'), async (req, 
         const dataURI = `data:${req.file.mimetype};base64,${b64}`;
 
         const result = await cloudinary.uploader.upload(dataURI, {
-            folder: 'devlink/events',
+            folder: 'nodematch/events',
             public_id: `event_${req.userId}_${Date.now()}`,
             transformation: [
                 { width: 1200, height: 630, crop: 'fill' }, // Standard aspect ratio for banners

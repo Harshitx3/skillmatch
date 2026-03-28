@@ -1,5 +1,5 @@
 {
-  "name": "devlink-server",
+  "name": "nodematch-server",
   "version": "1.0.0",
   "private": true,
   "type": "module",

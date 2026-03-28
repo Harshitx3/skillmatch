@@ -3,7 +3,9 @@ import api from "../lib/api.js";
 
 export default function Matches() {
   const [items, setItems] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
   const [selectedImage, setSelectedImage] = useState(null);
+  const [selectedUser, setSelectedUser] = useState(null);
   const [removingId, setRemovingId] = useState(null);
 
   async function load() {
@@ -14,6 +16,16 @@ export default function Matches() {
   useEffect(() => {
     load();
   }, []);
+
+  const filteredItems = items.filter(u => {
+    const term = searchTerm.toLowerCase();
+    return (
+      u.name?.toLowerCase().includes(term) ||
+      u.email?.toLowerCase().includes(term) ||
+      u.college?.toLowerCase().includes(term) ||
+      u.skills?.some(s => s.toLowerCase().includes(term))
+    );
+  });
 
   async function handleRemove(id) {
     if (!window.confirm("Are you sure you want to remove this match?")) return;
@@ -65,138 +77,99 @@ export default function Matches() {
         </p>
       </div>
 
+      {/* Search Bar */}
+      {items.length > 0 && (
+        <div className="max-w-md mx-auto mb-8">
+          <div className="relative">
+            <input
+              type="text"
+              placeholder="Search by name, skills, or college..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full bg-gray-900/50 border border-gray-800 rounded-full px-12 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all shadow-lg shadow-black/20"
+            />
+            <svg className="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            {searchTerm && (
+              <button
+                onClick={() => setSearchTerm("")}
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-white transition"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            )}
+          </div>
+          {searchTerm && (
+            <p className="text-center text-xs text-gray-500 mt-2">
+              Found {filteredItems.length} match{filteredItems.length !== 1 ? 'es' : ''} for "{searchTerm}"
+            </p>
+          )}
+        </div>
+      )}
+
       {/* Matches Grid */}
       {items.length > 0 ? (
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {items.map(u => (
-            <div
-              key={u._id}
-              className="group bg-gray-900/50 backdrop-blur-sm border border-gray-800 rounded-2xl p-6 hover:border-indigo-500/50 hover:bg-gray-800/50 transition-all duration-300 hover:shadow-lg hover:shadow-indigo-500/10"
-            >
-              {/* Avatar & Name Section */}
-              <div className="flex items-center gap-4 mb-4">
-                <button
-                  onClick={() => setSelectedImage(getAvatarUrl(u))}
-                  className="relative group w-16 h-16 rounded-full overflow-hidden border-2 border-gray-700 shadow-lg flex-shrink-0"
-                >
-                  <img
-                    src={getAvatarUrl(u)}
-                    alt={u.name}
-                    className="w-full h-full object-cover transition-transform group-hover:scale-110"
-                    onError={(e) => {
-                      e.target.style.display = 'none';
-                      e.target.parentElement.classList.add('bg-gradient-to-br', getAvatarColor(u.name));
-                      e.target.parentElement.innerHTML = `<span class="w-full h-full flex items-center justify-center text-white text-xl font-bold">${getInitials(u.name)}</span>`;
-                    }}
-                  />
-                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
-                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
-                    </svg>
+        filteredItems.length > 0 ? (
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+            {filteredItems.map(u => (
+              <div
+                key={u._id}
+                onClick={() => setSelectedUser(u)}
+                className="group bg-[#161822] border border-gray-800 rounded-2xl p-4 flex flex-col items-center text-center cursor-pointer hover:border-violet-500/50 hover:bg-[#1f2233] transition-all duration-300 shadow-xl shadow-black/20"
+              >
+                <div className="relative mb-3">
+                  <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full overflow-hidden border-2 border-gray-700 group-hover:border-violet-500 transition-colors shadow-lg">
+                    <img
+                      src={getAvatarUrl(u)}
+                      alt={u.name}
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                    />
                   </div>
-                </button>
-                <div className="flex-1 min-w-0">
-                  <h3 className="font-bold text-lg text-white truncate">{u.name}</h3>
-                  <p className="text-sm text-gray-400 truncate">{u.college || "Developer"}</p>
+                  <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-green-500 border-2 border-[#161822] rounded-full"></div>
                 </div>
+                
+                <h3 className="font-bold text-white text-sm sm:text-base group-hover:text-violet-400 transition-colors line-clamp-1">
+                  {u.name}
+                </h3>
+                <p className="text-gray-500 text-[10px] sm:text-xs truncate w-full">
+                  @{u.username}
+                </p>
+
                 <button
-                  onClick={() => handleRemove(u._id)}
-                  disabled={removingId === u._id}
-                  className="p-2 text-gray-500 hover:text-red-500 hover:bg-red-500/10 rounded-full transition"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleRemove(u._id);
+                  }}
+                  className="mt-3 p-1.5 text-gray-600 hover:text-red-500 hover:bg-red-500/10 rounded-full transition-all"
                   title="Remove match"
                 >
-                  {removingId === u._id ? (
-                    <div className="w-5 h-5 border-2 border-red-500 border-t-transparent rounded-full animate-spin"></div>
-                  ) : (
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                    </svg>
-                  )}
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
                 </button>
               </div>
-
-              {/* Skills Tags */}
-              {u.skills && u.skills.length > 0 && (
-                <div className="flex flex-wrap gap-2 mb-4">
-                  {u.skills.slice(0, 4).map((skill, idx) => (
-                    <span
-                      key={idx}
-                      className="px-2 py-1 text-xs bg-gray-800 text-gray-300 rounded-full border border-gray-700"
-                    >
-                      {skill}
-                    </span>
-                  ))}
-                  {u.skills.length > 4 && (
-                    <span className="px-2 py-1 text-xs bg-gray-800 text-gray-400 rounded-full">
-                      +{u.skills.length - 4}
-                    </span>
-                  )}
-                </div>
-              )}
-
-              {/* Bio */}
-              {u.bio && (
-                <p className="text-sm text-gray-400 mb-4 line-clamp-2">{u.bio}</p>
-              )}
-
-              {/* Contact Links */}
-              <div className="space-y-2 pt-4 border-t border-gray-800">
-                <a
-                  href={`mailto:${u.email}`}
-                  className="flex items-center gap-2 text-sm text-gray-300 hover:text-indigo-400 transition group/link"
-                >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                  </svg>
-                  <span className="truncate">{u.email}</span>
-                </a>
-
-                {u.githubUsername && (
-                  <a
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    href={`https://github.com/${u.githubUsername}`}
-                    className="flex items-center gap-2 text-sm text-gray-300 hover:text-indigo-400 transition"
-                  >
-                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
-                    </svg>
-                    <span>GitHub</span>
-                  </a>
-                )}
-
-                {u.leetcodeUsername && (
-                  <a
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    href={`https://leetcode.com/${u.leetcodeUsername}`}
-                    className="flex items-center gap-2 text-sm text-gray-300 hover:text-indigo-400 transition"
-                  >
-                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M13.483 0a1.374 1.374 0 0 0-.961.438L7.116 6.226l-3.854 4.126a5.266 5.266 0 0 0-1.209 2.104 5.35 5.35 0 0 0-.125.513 5.527 5.527 0 0 0 .062 2.362 5.83 5.83 0 0 0 .349 1.017 5.938 5.938 0 0 0 1.271 1.818l4.277 4.193.039.038c2.248 2.165 5.852 2.133 8.063-.074l2.396-2.392c.54-.54.54-1.414.003-1.955a1.378 1.378 0 0 0-1.951-.003l-2.396 2.392a3.021 3.021 0 0 1-4.205.038l-.02-.019-4.276-4.193c-.652-.64-.972-1.469-.948-2.263a2.68 2.68 0 0 1 .066-.523 2.545 2.545 0 0 1 .619-1.164L9.13 8.028c.693-.693 1.814-.693 2.508 0 .434.433.618 1.025.551 1.61a1.68 1.68 0 0 1-.071.333 1.742 1.742 0 0 1-.559.995l-2.095 2.095a.489.489 0 0 0-.117.289.49.49 0 0 0 .146.35.498.498 0 0 0 .697 0l2.096-2.095a2.726 2.726 0 0 0 .873-1.563 2.72 2.72 0 0 0-.116-1.147 2.726 2.726 0 0 0-.961-1.405c-.937-.936-2.246-1.139-3.349-.609a3.39 3.39 0 0 0-.471.271l-4.276-4.193a5.217 5.217 0 0 0-1.112-1.59 5.274 5.274 0 0 0-1.658-1.058A5.319 5.319 0 0 0 0 7.116v9.768c0 .759.157 1.5.465 2.195a5.358 5.358 0 0 0 1.282 1.801l5.433 5.433c.525.524 1.226.813 1.972.813h7.136c.746 0 1.447-.289 1.972-.813l5.433-5.433a5.358 5.358 0 0 0 1.282-1.801 5.403 5.403 0 0 0 .465-2.195V7.116a5.319 5.319 0 0 0-1.548-3.742 5.274 5.274 0 0 0-1.658-1.058A5.266 5.266 0 0 0 21.884 2.1l-3.854-4.126A1.374 1.374 0 0 0 16.517 0h-3.034z" />
-                    </svg>
-                    <span>LeetCode</span>
-                  </a>
-                )}
-
-                {u.linkedin && (
-                  <a
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    href={`https://linkedin.com/in/${u.linkedin}`}
-                    className="flex items-center gap-2 text-sm text-gray-300 hover:text-indigo-400 transition"
-                  >
-                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />
-                    </svg>
-                    <span>LinkedIn</span>
-                  </a>
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
       ) : (
+        /* No Search Results */
+        <div className="text-center py-16">
+          <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-gray-800/50 flex items-center justify-center">
+            <svg className="w-10 h-10 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          </div>
+          <h3 className="text-lg font-medium text-gray-400">No matches found for "{searchTerm}"</h3>
+          <button
+            onClick={() => setSearchTerm("")}
+            className="mt-4 text-indigo-400 hover:text-indigo-300 font-medium transition"
+          >
+            Clear search
+          </button>
+        </div>
+      )) : (
         /* Empty State */
         <div className="text-center py-16">
           <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-gray-800 flex items-center justify-center">
@@ -215,6 +188,156 @@ export default function Matches() {
             </svg>
             Start Discovering
           </a>
+        </div>
+      )}
+
+      {/* Profile Detail Modal */}
+      {selectedUser && (
+        <div
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in"
+          onClick={() => setSelectedUser(null)}
+        >
+          <div 
+            className="bg-[#161822] border border-gray-800 rounded-3xl w-full max-w-lg max-h-[90vh] overflow-y-auto shadow-2xl animate-slide-up"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="relative h-32 bg-gradient-to-r from-violet-600 to-purple-600">
+              <button
+                onClick={() => setSelectedUser(null)}
+                className="absolute top-4 right-4 bg-black/20 hover:bg-black/40 text-white p-2 rounded-full backdrop-blur-md transition-all"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            
+            <div className="px-6 pb-8">
+              <div className="relative -mt-16 mb-4 flex justify-center">
+                <div className="w-32 h-32 rounded-full border-4 border-[#161822] overflow-hidden shadow-2xl">
+                  <img
+                    src={getAvatarUrl(selectedUser)}
+                    alt={selectedUser.name}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              </div>
+
+              <div className="text-center mb-8">
+                <h2 className="text-2xl font-bold text-white mb-1">{selectedUser.name}</h2>
+                <p className="text-violet-400 font-medium text-sm mb-2">@{selectedUser.username}</p>
+                {selectedUser.college && (
+                  <p className="text-gray-400 text-sm flex items-center justify-center gap-2">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                    </svg>
+                    {selectedUser.college}
+                  </p>
+                )}
+              </div>
+
+              <div className="space-y-6">
+                {selectedUser.bio && (
+                  <div>
+                    <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">About</h3>
+                    <p className="text-gray-300 text-sm leading-relaxed bg-gray-800/30 p-4 rounded-xl border border-gray-800/50">
+                      {selectedUser.bio}
+                    </p>
+                  </div>
+                )}
+
+                {selectedUser.skills && selectedUser.skills.length > 0 && (
+                  <div>
+                    <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Skills</h3>
+                    <div className="flex flex-wrap gap-2">
+                      {selectedUser.skills.map((s, i) => (
+                        <span key={i} className="px-3 py-1 bg-violet-500/10 text-violet-400 border border-violet-500/20 rounded-full text-xs font-medium">
+                          {s}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                <div>
+                  <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-3">Connect</h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <a
+                      href={`mailto:${selectedUser.email}`}
+                      className="flex items-center gap-3 p-3 bg-gray-800/30 border border-gray-800 rounded-xl text-sm text-gray-300 hover:border-violet-500/50 hover:bg-gray-800/50 transition-all group"
+                    >
+                      <div className="p-2 bg-gray-900 rounded-lg group-hover:text-violet-400 transition-colors">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                        </svg>
+                      </div>
+                      Email
+                    </a>
+                    
+                    {selectedUser.githubUsername && (
+                      <a
+                        href={`https://github.com/${selectedUser.githubUsername}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-3 p-3 bg-gray-800/30 border border-gray-800 rounded-xl text-sm text-gray-300 hover:border-violet-500/50 hover:bg-gray-800/50 transition-all group"
+                      >
+                        <div className="p-2 bg-gray-900 rounded-lg group-hover:text-violet-400 transition-colors">
+                          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                        </div>
+                        GitHub
+                      </a>
+                    )}
+
+                    {selectedUser.leetcodeUsername && (
+                      <a
+                        href={`https://leetcode.com/${selectedUser.leetcodeUsername}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-3 p-3 bg-gray-800/30 border border-gray-800 rounded-xl text-sm text-gray-300 hover:border-violet-500/50 hover:bg-gray-800/50 transition-all group"
+                      >
+                        <div className="p-2 bg-gray-900 rounded-lg group-hover:text-violet-400 transition-colors">
+                          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M13.483 0a1.374 1.374 0 0 0-.961.414l-4.32 4.244a1.09 1.09 0 0 0 0 1.556 1.111 1.111 0 0 0 1.572 0l3.44-3.392s.51-.511.51-.511a.41.41 0 0 1 .587 0 .42.42 0 0 1 0 .589l-5.69 5.588a1.361 1.361 0 0 0 0 1.933 1.397 1.397 0 0 0 1.957 0l5.69-5.588a1.382 1.382 0 0 0 0-1.933L14.444.414A1.369 1.369 0 0 0 13.483 0zm-3.746 9.958a1.37 1.37 0 0 0-1.957 0 1.361 1.361 0 0 0 0 1.933l4.693 4.617a1.382 1.382 0 0 0 1.932 0 1.396 1.396 0 0 0 0-1.933l-4.668-4.617z"/><path d="M20.908 11.14l-1.824-1.791a1.602 1.602 0 0 0-2.244 0 1.574 1.574 0 0 0-.012 2.22l1.823 1.791a1.602 1.602 0 0 0 2.243 0 1.574 1.574 0 0 0 .014-2.22zM2.87 11.14l1.824-1.791a1.602 1.602 0 0 1 2.244 0 1.574 1.574 0 0 1 .012 2.22L5.127 13.36a1.602 1.602 0 0 1-2.243 0 1.574 1.574 0 0 1-.014-2.22z"/></svg>
+                        </div>
+                        LeetCode
+                      </a>
+                    )}
+
+                    {selectedUser.linkedin && (
+                      <a
+                        href={`https://linkedin.com/in/${selectedUser.linkedin}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-3 p-3 bg-gray-800/30 border border-gray-800 rounded-xl text-sm text-gray-300 hover:border-violet-500/50 hover:bg-gray-800/50 transition-all group"
+                      >
+                        <div className="p-2 bg-gray-900 rounded-lg group-hover:text-violet-400 transition-colors">
+                          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" /></svg>
+                        </div>
+                        LinkedIn
+                      </a>
+                    )}
+
+                    {selectedUser.instagram && (
+                      <a
+                        href={`https://instagram.com/${selectedUser.instagram}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-3 p-3 bg-gray-800/30 border border-gray-800 rounded-xl text-sm text-gray-300 hover:border-violet-500/50 hover:bg-gray-800/50 transition-all group"
+                      >
+                        <div className="p-2 bg-gray-900 rounded-lg group-hover:text-violet-400 transition-colors">
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+                            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                            <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                          </svg>
+                        </div>
+                        Instagram
+                      </a>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       )}
 

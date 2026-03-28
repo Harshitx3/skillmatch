@@ -103,7 +103,7 @@ function Layout({ children }) {
   return (
     <div className="min-h-screen bg-gray-950 text-gray-100">
       <header className="p-4 border-b border-gray-800 flex items-center justify-between sticky top-0 bg-gray-950/80 backdrop-blur-md z-50">
-        <Link to="/" className="font-bold text-2xl bg-gradient-to-r from-indigo-500 to-purple-500 bg-clip-text text-transparent">DevLink</Link>
+        <Link to="/" className="font-bold text-2xl bg-gradient-to-r from-indigo-500 to-purple-500 bg-clip-text text-transparent">NodeMatch</Link>
 
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-1 text-sm font-medium">

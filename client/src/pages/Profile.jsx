@@ -20,6 +20,14 @@ const LinkedinIcon = () => (
   </svg>
 );
 
+const InstagramIcon = () => (
+  <svg className="w-5 h-5 opacity-70" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24" aria-hidden="true">
+    <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+  </svg>
+);
+
 export default function Profile() {
   const navigate = useNavigate();
   const [form, setForm] = useState({
@@ -31,6 +39,7 @@ export default function Profile() {
     githubUsername: "",
     leetcodeUsername: "",
     linkedin: "",
+    instagram: "",
     lookingFor: "",
     experienceLevel: "",
     avatar: ""
@@ -119,6 +128,7 @@ export default function Profile() {
       githubUsername: form.githubUsername,
       leetcodeUsername: form.leetcodeUsername,
       linkedin: form.linkedin,
+      instagram: form.instagram,
       lookingFor: form.lookingFor,
       experienceLevel: form.experienceLevel,
       avatar: form.avatar // Include avatar URL
@@ -193,7 +203,7 @@ export default function Profile() {
       <div className="w-full max-w-6xl">
         {isNewUser && (
           <div className="mb-6 bg-gradient-to-r from-violet-600/20 to-purple-600/20 border border-violet-500/30 rounded-xl p-6">
-            <h2 className="text-xl font-bold text-white mb-2">Welcome to DevLink! 🎉</h2>
+            <h2 className="text-xl font-bold text-white mb-2">Welcome to NodeMatch! 🎉</h2>
             <p className="text-gray-300 mb-4">
               Complete your profile to start connecting with other developers, or continue as an explorer to browse anonymously.
             </p>
@@ -208,7 +218,7 @@ export default function Profile() {
           </div>
         )}
         <div className="mb-6 md:mb-8 text-center lg:text-left">
-          <h1 className="text-2xl sm:text-3xl font-bold text-violet-500 mb-2">DevLink Profile</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold text-violet-500 mb-2">NodeMatch Profile</h1>
           <p className="text-sm sm:text-base text-gray-400">Manage your professional presence and connect with other builders.</p>
         </div>
 
@@ -296,6 +306,17 @@ export default function Profile() {
                 >
                   <LinkedinIcon />
                   <span className="truncate">{`linkedin.com/in/${form.linkedin}`}</span>
+                </a>
+              )}
+              {form.instagram && (
+                <a
+                  href={`https://instagram.com/${form.instagram}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center text-sm text-gray-400 gap-3 hover:text-white transition-colors"
+                >
+                  <InstagramIcon />
+                  <span className="truncate">{`instagram.com/${form.instagram}`}</span>
                 </a>
               )}
             </div>
@@ -436,6 +457,14 @@ export default function Profile() {
                     className="w-full px-4 py-2 bg-[#0B0F19] border border-gray-800 rounded-md text-sm text-white focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-colors"
                     placeholder="johndoe"
                     value={form.linkedin} onChange={e => set("linkedin", e.target.value)}
+                  />
+                </div>
+                <div class="mt-4 md:mt-5">
+                  <label className="block text-xs font-medium text-gray-400 mb-2">Instagram Username</label>
+                  <input
+                    className="w-full px-4 py-2 bg-[#0B0F19] border border-gray-800 rounded-md text-sm text-white focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-colors"
+                    placeholder="johndoe_official"
+                    value={form.instagram} onChange={e => set("instagram", e.target.value)}
                   />
                 </div>
               </section>

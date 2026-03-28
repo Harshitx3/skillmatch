@@ -63,7 +63,7 @@ export default function AboutUs() {
                 <p className="relative max-w-2xl mx-auto text-base sm:text-lg md:text-xl text-gray-400 mb-8 md:mb-10 leading-relaxed px-2">
                     We bridge the gap between brilliant minds and ambitious ideas. 
                     Whether it's a weekend hackathon or the next unicorn startup, 
-                    find your perfect coding partner on DevLink.
+                    find your perfect coding partner on NodeMatch.
                 </p>
                 
 
@@ -152,12 +152,12 @@ export default function AboutUs() {
                     <div className="flex-1 space-y-4 md:space-y-6 text-center lg:text-left">
                         <h2 className="text-3xl md:text-4xl font-bold text-white">Our Story</h2>
                         <p className="text-gray-400 text-base md:text-lg leading-relaxed">
-                            DevLink was born from a simple observation: brilliant developers with great ideas often struggle to find the right people to turn those ideas into reality. We experienced this firsthand, and we knew there had to be a better way. Our goal is to create a platform that not only connects developers but also empowers them to build the future of technology, together.
+                            NodeMatch was born from a simple observation: brilliant developers with great ideas often struggle to find the right people to turn those ideas into reality. We experienced this firsthand, and we knew there had to be a better way. Our goal is to create a platform that not only connects developers but also empowers them to build the future of technology, together.
                         </p>
                     </div>
                     <div className="flex-1 w-full max-w-2xl mx-auto">
                         <div className="bg-[#161822] border border-gray-800 rounded-2xl aspect-video flex items-center justify-center relative overflow-hidden shadow-[0_0_30px_rgba(139,92,246,0.15)]">
-                           <p className="text-gray-400">The DevLink Team</p>
+                           <p className="text-gray-400">The NodeMatch Team</p>
                         </div>
                     </div>
                 </div>
@@ -257,7 +257,7 @@ export default function AboutUs() {
                             </div>
                             <h3 className="text-xl font-bold text-white mb-3">Project Collaboration</h3>
                             <p className="text-gray-400 text-sm">
-                                Native support for shared boards, document editing, and repository management within the DevLink platform.
+                                Native support for shared boards, document editing, and repository management within the NodeMatch platform.
                             </p>
                         </div>
                         <div className="flex-1 bg-[#0a0a0f] border border-gray-800 rounded-xl p-4 font-mono text-xs text-green-400 flex flex-col justify-center shadow-inner pt-6 relative overflow-hidden">
@@ -266,7 +266,7 @@ export default function AboutUs() {
                                 <div className="w-2 h-2 rounded-full bg-yellow-500/80"></div>
                                 <div className="w-2 h-2 rounded-full bg-green-500/80"></div>
                             </div>
-                            <p>$ git remote add devlink ...</p>
+                            <p>$ git remote add nodematch ...</p>
                             <p className="text-gray-400">Connecting to collab server...</p>
                             <p className="text-violet-400">Success: workspace linked!</p>
                             <p className="animate-pulse">_</p>

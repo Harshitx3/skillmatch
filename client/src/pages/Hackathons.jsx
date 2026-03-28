@@ -239,7 +239,7 @@ export default function Hackathons() {
                                             {ev.title}
                                         </h3>
                                         <p className="text-gray-400 text-sm font-medium mt-1 truncate">
-                                            {ev.organization || "DevLink Community"}
+                                            {ev.organization || "NodeMatch Community"}
                                         </p>
 
                                         <div className="mt-4 space-y-3">
@@ -360,7 +360,7 @@ export default function Hackathons() {
                             </div>
 
                             <h2 className="text-3xl sm:text-4xl font-black text-white mb-2">{selectedEvent.title}</h2>
-                            <p className="text-gray-400 text-sm mb-6">Organized by: <span className="text-indigo-400 font-bold">{selectedEvent.organization || "DevLink Community"}</span></p>
+                            <p className="text-gray-400 text-sm mb-6">Organized by: <span className="text-indigo-400 font-bold">{selectedEvent.organization || "NodeMatch Community"}</span></p>
                             
                             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-10">
                                 <div className="bg-gray-800/40 p-5 rounded-2xl border border-gray-800">

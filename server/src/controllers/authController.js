@@ -6,7 +6,7 @@ import { OAuth2Client } from 'google-auth-library';
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 // Admin credentials - change these to your preferred admin email/password
-const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "admin@devlink.com";
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "admin@nodematch.com";
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "admin123";
 
 function sign(userId) {
