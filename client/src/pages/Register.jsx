@@ -3,16 +3,14 @@ import api from "../lib/api.js";
 import GoogleAuthButton from "../components/GoogleAuthButton.jsx";
 
 export default function Register({ switchToLogin }) {
-  const [step, setStep] = useState(1); // 1: Details (Name, Email, Password), 2: OTP
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [otp, setOtp] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const handleSendOTP = async (e) => {
+  const submit = async (e) => {
     e.preventDefault();
     if (password !== confirmPassword) {
       setError("Passwords do not match");
@@ -21,25 +19,11 @@ export default function Register({ switchToLogin }) {
     setLoading(true);
     setError("");
     try {
-      await api.post("/api/auth/send-otp", { email });
-      setStep(2);
-    } catch (err) {
-      setError(err.response?.data?.error || "Failed to send OTP");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const submit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError("");
-    try {
-      const { data } = await api.post("/api/auth/register", { name, email, password, otp });
+      const { data } = await api.post("/api/auth/register", { name, email, password });
       localStorage.setItem("token", data.token);
       window.location.href = "/profile";
     } catch (err) {
-      setError(err.response?.data?.error || "Registration failed. Invalid OTP?");
+      setError(err.response?.data?.error || "Registration failed");
     } finally {
       setLoading(false);
     }
@@ -57,95 +41,61 @@ export default function Register({ switchToLogin }) {
           </div>
         )}
 
-        {step === 1 ? (
-          <form onSubmit={handleSendOTP} className="space-y-4">
+        <form onSubmit={submit} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-400 mb-1.5">Full Name</label>
+            <input
+              type="text"
+              className="w-full p-3 bg-gray-800 border border-gray-700 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition"
+              placeholder="John Doe"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-400 mb-1.5">Email Address</label>
+            <input
+              type="email"
+              className="w-full p-3 bg-gray-800 border border-gray-700 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition"
+              placeholder="dev@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-400 mb-1.5">Full Name</label>
+              <label className="block text-sm font-medium text-gray-400 mb-1.5">Password</label>
               <input
-                type="text"
+                type="password"
                 className="w-full p-3 bg-gray-800 border border-gray-700 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition"
-                placeholder="John Doe"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 required
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-400 mb-1.5">Email Address</label>
+              <label className="block text-sm font-medium text-gray-400 mb-1.5">Confirm Password</label>
               <input
-                type="email"
+                type="password"
                 className="w-full p-3 bg-gray-800 border border-gray-700 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition"
-                placeholder="dev@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                placeholder="••••••••"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
                 required
               />
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-400 mb-1.5">Password</label>
-                <input
-                  type="password"
-                  className="w-full p-3 bg-gray-800 border border-gray-700 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition"
-                  placeholder="••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-400 mb-1.5">Confirm Password</label>
-                <input
-                  type="password"
-                  className="w-full p-3 bg-gray-800 border border-gray-700 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition"
-                  placeholder="••••••••"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  required
-                />
-              </div>
-            </div>
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl transition duration-300 shadow-lg shadow-indigo-500/20 disabled:opacity-50 mt-2"
-            >
-              {loading ? "Sending OTP..." : "Continue to Verification"}
-            </button>
-          </form>
-        ) : (
-          <form onSubmit={submit} className="space-y-6">
-            <div className="text-center">
-              <p className="text-indigo-400 font-medium mb-2">Check your inbox!</p>
-              <p className="text-sm text-gray-500 mb-6">We've sent a 6-digit verification code to <br/><span className="text-gray-300">{email}</span></p>
-              
-              <label className="block text-sm font-medium text-gray-400 mb-2">Verification Code</label>
-              <input
-                type="text"
-                className="w-full p-3 bg-gray-800 border border-gray-700 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition text-center text-2xl tracking-widest"
-                placeholder="000000"
-                maxLength="6"
-                value={otp}
-                onChange={(e) => setOtp(e.target.value)}
-                required
-              />
-            </div>
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl transition duration-300 shadow-lg shadow-indigo-500/20 disabled:opacity-50"
-            >
-              {loading ? "Verifying..." : "Verify & Complete Signup"}
-            </button>
-            <button 
-              type="button"
-              onClick={() => setStep(1)}
-              className="w-full text-sm text-gray-500 hover:text-gray-400 transition"
-            >
-              ← Back to details
-            </button>
-          </form>
-        )}
+          </div>
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl transition duration-300 shadow-lg shadow-indigo-500/20 disabled:opacity-50 mt-6"
+          >
+            {loading ? "Registering..." : "Complete Signup"}
+          </button>
+        </form>
       </div>
 
       <div className="mt-6 pt-6 border-t border-gray-800">
