@@ -4,6 +4,9 @@ import './index.css'
 import App from './App.jsx'
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { SocketProvider } from './contexts/SocketContext.jsx';
+import { registerSW } from 'virtual:pwa-register'
+
+registerSW({ immediate: true })
 
 const googleClientId = "405774559770-tsdj9hevcs6hvfehuocpuc2dqr543big.apps.googleusercontent.com";
 
