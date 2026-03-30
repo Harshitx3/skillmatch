@@ -14,16 +14,29 @@ export const sendContactEmail = async (req, res) => {
     });
 
     try {
+        console.log(`Attempting to send contact email from ${email}...`);
         await transporter.sendMail({
-            from: `"${name}" <${email}>`,
+            from: `"${name}" <${process.env.SMTP_USER}>`, // Best practice: from should be the authenticated user
+            replyTo: email, // Use replyTo for the actual sender's email
             to: process.env.EMAIL_RECIPIENT,
-            subject: subject,
-            text: message,
-            html: `<p>${message}</p>`,
+            subject: `Contact Form: ${subject}`,
+            text: `Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}`,
+            html: `
+                <div style="font-family: sans-serif; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
+                    <h2 style="color: #6366f1;">New Contact Message</h2>
+                    <p><strong>Name:</strong> ${name}</p>
+                    <p><strong>Email:</strong> ${email}</p>
+                    <p><strong>Subject:</strong> ${subject}</p>
+                    <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
+                    <p><strong>Message:</strong></p>
+                    <p style="white-space: pre-wrap;">${message}</p>
+                </div>
+            `,
         });
+        console.log("Contact email sent successfully!");
         res.status(200).json({ message: 'Email sent successfully' });
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Error sending email' });
+        console.error("Error sending contact email:", error);
+        res.status(500).json({ message: 'Error sending email. Please try again later.' });
     }
 };
