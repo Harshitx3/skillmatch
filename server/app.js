@@ -9,7 +9,6 @@ import matchRoutes from "./src/routes/matchRoutes.js";
 import uploadRoutes from "./src/routes/uploadRoutes.js";
 import eventRoutes from "./src/routes/eventRoutes.js";
 import battleRoutes from "./src/routes/battleRoutes.js";
-import contactRoutes from "./src/routes/contactRoutes.js";
 
 dotenv.config();
 
@@ -32,7 +31,6 @@ app.use("/api/matches", matchRoutes);
 app.use("/api/upload", uploadRoutes);
 app.use("/api/events", eventRoutes);
 app.use("/api/battles", battleRoutes);
-app.use("/api", contactRoutes);
 app.get("/",(req,res)=>{
   res.send("Backend is live");
 });
