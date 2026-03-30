@@ -1,6 +1,8 @@
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
+import OTP from "../models/OTP.js";
 import bcrypt from "bcryptjs";
+import nodemailer from "nodemailer";
 import { OAuth2Client } from 'google-auth-library';
 
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
@@ -21,18 +23,95 @@ function isProfileComplete(user) {
 
 export async function register(req, res) {
   try {
-    const { name, email, password } = req.body;
-    if (!name || !email || !password) return res.status(400).json({ error: "Missing fields" });
+    const { name, email, password, otp } = req.body;
+    if (!name || !email || !password || !otp) return res.status(400).json({ error: "Missing fields" });
+
+    // Verify OTP again just to be safe before creating user
+    const otpRecord = await OTP.findOne({ email, otp });
+    if (!otpRecord) return res.status(400).json({ error: "Invalid or expired OTP" });
+
     const exists = await User.findOne({ email });
     if (exists) return res.status(400).json({ error: "Email in use" });
+    
     const user = new User({ name, email, password });
     await user.save();
+    
+    // Delete OTP after successful registration
+    await OTP.deleteOne({ _id: otpRecord._id });
+
     const token = sign(user._id);
     res.status(201).json({
       token,
       user: { id: user._id, name: user.name, email: user.email, isAdmin: user.isAdmin },
       profileComplete: false
     });
+  } catch (e) {
+    res.status(500).json({ error: "Server error" });
+  }
+}
+
+export async function sendOTP(req, res) {
+  try {
+    const { email } = req.body;
+    if (!email) return res.status(400).json({ error: "Email is required" });
+
+    const exists = await User.findOne({ email });
+    if (exists) return res.status(400).json({ error: "Email already registered" });
+
+    // Generate 6-digit OTP
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+
+    // Save to DB
+    await OTP.findOneAndUpdate(
+      { email },
+      { otp, createdAt: Date.now() },
+      { upsert: true, new: true }
+    );
+
+    // Send Email
+    const transporter = nodemailer.createTransport({
+      host: process.env.SMTP_HOST,
+      port: process.env.SMTP_PORT,
+      secure: false, // true for 465, false for other ports
+      auth: {
+        user: process.env.SMTP_USER,
+        pass: process.env.SMTP_PASS,
+      },
+    });
+
+    const mailOptions = {
+      from: `"NodeMatch" <${process.env.SMTP_USER}>`,
+      to: email,
+      subject: "Your NodeMatch Verification Code",
+      html: `
+        <div style="font-family: sans-serif; padding: 20px; border: 1px solid #eee; border-radius: 10px; max-width: 500px;">
+          <h2 style="color: #6366f1;">Welcome to NodeMatch!</h2>
+          <p>Please use the following verification code to complete your registration:</p>
+          <div style="font-size: 32px; font-weight: bold; letter-spacing: 5px; color: #4f46e5; margin: 20px 0;">
+            ${otp}
+          </div>
+          <p style="color: #666; font-size: 14px;">This code will expire in 10 minutes.</p>
+        </div>
+      `,
+    };
+
+    await transporter.sendMail(mailOptions);
+    res.json({ message: "OTP sent successfully" });
+  } catch (e) {
+    console.error("Send OTP error:", e);
+    res.status(500).json({ error: "Failed to send OTP" });
+  }
+}
+
+export async function verifyOTP(req, res) {
+  try {
+    const { email, otp } = req.body;
+    if (!email || !otp) return res.status(400).json({ error: "Missing fields" });
+
+    const record = await OTP.findOne({ email, otp });
+    if (!record) return res.status(400).json({ error: "Invalid or expired OTP" });
+
+    res.json({ message: "OTP verified successfully" });
   } catch (e) {
     res.status(500).json({ error: "Server error" });
   }

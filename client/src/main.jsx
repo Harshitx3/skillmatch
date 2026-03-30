@@ -8,7 +8,7 @@ import { registerSW } from 'virtual:pwa-register'
 
 registerSW({ immediate: true })
 
-const googleClientId = "405774559770-tsdj9hevcs6hvfehuocpuc2dqr543big.apps.googleusercontent.com";
+const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || "405774559770-tsdj9hevcs6hvfehuocpuc2dqr543big.apps.googleusercontent.com";
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
