@@ -14,7 +14,7 @@ const MONGO_URI = process.env.MONGO_URI ;
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
   cors: {
-    origin: process.env.CLIENT_URL || "https://skillmatch121.vercel.app",
+    origin: process.env.CLIENT_URL || "https://nodematch.in",
     methods: ["GET", "POST"]
   }
 });
