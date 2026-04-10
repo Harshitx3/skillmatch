@@ -22,8 +22,11 @@ function AdminLayout({ children }) {
   return (
     <div className="min-h-screen bg-gray-950 text-gray-100">
       <header className="p-4 border-b border-gray-800 flex items-center justify-between sticky top-0 bg-gray-950/80 backdrop-blur-md z-50">
-        <Link to="/admin/events" className="font-bold text-2xl bg-gradient-to-r from-yellow-400 to-orange-400 bg-clip-text text-transparent">
-          👑 Admin
+        <Link to="/admin/events" className="flex items-center gap-2">
+          <img src="/logo.png" alt="NodeMatch Logo" className="w-8 h-8 object-contain" />
+          <span className="font-bold text-2xl bg-gradient-to-r from-yellow-400 to-orange-400 bg-clip-text text-transparent">
+            👑 Admin
+          </span>
         </Link>
         <button
           onClick={() => { localStorage.removeItem("token"); localStorage.removeItem("isAdmin"); window.location.href = "/"; }}
@@ -103,7 +106,12 @@ function Layout({ children }) {
   return (
     <div className="min-h-screen bg-gray-950 text-gray-100">
       <header className="p-4 border-b border-gray-800 flex items-center justify-between sticky top-0 bg-gray-950/80 backdrop-blur-md z-50">
-        <Link to="/" className="font-bold text-2xl bg-gradient-to-r from-indigo-500 to-purple-500 bg-clip-text text-transparent">NodeMatch</Link>
+        <Link to="/" className="flex items-center gap-2 group">
+          <div className="w-10 h-10 bg-indigo-500/10 rounded-xl flex items-center justify-center group-hover:bg-indigo-500/20 transition-all duration-300">
+            <img src="/logo.png" alt="NodeMatch Logo" className="w-8 h-8 object-contain" />
+          </div>
+          <span className="font-bold text-2xl bg-gradient-to-r from-indigo-500 to-purple-500 bg-clip-text text-transparent">NodeMatch</span>
+        </Link>
 
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-1 text-sm font-medium">

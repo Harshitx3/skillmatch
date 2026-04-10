@@ -6,8 +6,13 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
         {/* Brand Section */}
         <div className="space-y-4">
-          <Link to="/" className="text-2xl font-bold bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent">
-            NodeMatch
+          <Link to="/" className="flex items-center gap-2 group">
+            <div className="w-10 h-10 bg-indigo-500/10 rounded-xl flex items-center justify-center group-hover:bg-indigo-500/20 transition-all duration-300">
+              <img src="/logo.png" alt="NodeMatch Logo" className="w-8 h-8 object-contain" />
+            </div>
+            <span className="text-2xl font-bold bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent">
+              NodeMatch
+            </span>
           </Link>
           <p className="text-gray-400 text-sm leading-relaxed">
             The developer-first platform to find co-founders, hackathon partners, and open-source collaborators. 
