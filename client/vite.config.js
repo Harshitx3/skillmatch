@@ -11,7 +11,7 @@ export default defineConfig({
   devOptions: {
     enabled: true
   },
-      includeAssets: ['logo.png', 'robots.txt', 'sitemap.xml'],
+      includeAssets: ['favicon.ico', 'logo.png', 'robots.txt', 'sitemap.xml'],
       manifest: {
         name: 'NodeMatch',
         short_name: 'NodeMatch',
