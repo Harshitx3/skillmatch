@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 export default function Footer() {
   return (
     <footer className="bg-gray-950 border-t border-gray-800 pt-16 pb-8 px-4">
-      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12">
         {/* Brand Section */}
         <div className="space-y-4">
           <Link to="/" className="flex items-center gap-2 group">
@@ -36,7 +36,6 @@ export default function Footer() {
           <ul className="space-y-4">
             <li><Link to="/about" className="text-gray-400 hover:text-indigo-400 transition text-sm">About Us</Link></li>
             <li><Link to="/contact" className="text-gray-400 hover:text-indigo-400 transition text-sm">Contact</Link></li>
-            <li><a href="#" className="text-gray-400 hover:text-indigo-400 transition text-sm">Privacy Policy</a></li>
           </ul>
         </div>
 
@@ -60,17 +59,6 @@ export default function Footer() {
               </svg>
             </a>
           </div>
-        </div>
-      </div>
-
-      <div className="max-w-7xl mx-auto border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-        <p className="text-gray-500 text-sm">
-          &copy; {new Date().getFullYear()} NodeMatch. Built for developers by developers.
-        </p>
-        <div className="flex gap-6">
-          <a href="#" className="text-gray-500 hover:text-white transition text-sm">Terms</a>
-          <a href="#" className="text-gray-500 hover:text-white transition text-sm">Privacy</a>
-          <a href="#" className="text-gray-500 hover:text-white transition text-sm">Cookies</a>
         </div>
       </div>
     </footer>
