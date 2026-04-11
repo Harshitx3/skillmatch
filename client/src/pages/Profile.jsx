@@ -48,6 +48,14 @@ export default function Profile() {
   const [usernameStatus, setUsernameStatus] = useState({ checking: false, available: null, message: "" });
   const [originalUsername, setOriginalUsername] = useState("");
   const [uploading, setUploading] = useState(false);
+  const [message, setMessage] = useState({ type: "", text: "" });
+
+  useEffect(() => {
+    if (message.text) {
+      const timer = setTimeout(() => setMessage({ type: "", text: "" }), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [message]);
 
   useEffect(() => {
     async function load() {
@@ -146,11 +154,11 @@ export default function Profile() {
         setForm(prev => ({ ...prev, ...updatedData }));
       }
 
-      alert("Profile saved! You are now discoverable to other users.");
+      setMessage({ type: "success", text: "Profile saved! You are now discoverable to other users." });
       setIsNewUser(false);
     } catch (err) {
       console.error("Save error:", err);
-      alert(err.response?.data?.error || "Error saving profile");
+      setMessage({ type: "error", text: err.response?.data?.error || "Error saving profile" });
     }
   }
 
@@ -165,13 +173,13 @@ export default function Profile() {
 
     // Validate file type
     if (!file.type.startsWith('image/')) {
-      alert('Please select an image file');
+      setMessage({ type: "error", text: "Please select an image file" });
       return;
     }
 
     // Validate file size (5MB)
     if (file.size > 5 * 1024 * 1024) {
-      alert('Image size should be less than 5MB');
+      setMessage({ type: "error", text: "Image size should be less than 5MB" });
       return;
     }
 
@@ -188,11 +196,11 @@ export default function Profile() {
 
       if (response.data.url) {
         set('avatar', response.data.url);
-        alert('Profile picture uploaded successfully!');
+        setMessage({ type: "success", text: "Profile picture uploaded successfully!" });
       }
     } catch (error) {
       console.error('Upload error:', error);
-      alert('Failed to upload image. Please try again.');
+      setMessage({ type: "error", text: "Failed to upload image. Please try again." });
     } finally {
       setUploading(false);
     }
@@ -221,6 +229,28 @@ export default function Profile() {
           <h1 className="text-2xl sm:text-3xl font-bold text-violet-500 mb-2">NodeMatch Profile</h1>
           <p className="text-sm sm:text-base text-gray-400">Manage your professional presence and connect with other builders.</p>
         </div>
+
+        {message.text && (
+          <div className={`mb-6 p-4 rounded-2xl flex items-center gap-3 animate-in fade-in slide-in-from-top-4 duration-300 ${message.type === 'success' ? 'bg-green-500/10 border border-green-500/20 text-green-400' : 'bg-red-500/10 border border-red-500/20 text-red-400 animate-shake'}`}>
+            <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${message.type === 'success' ? 'bg-green-500/20' : 'bg-red-500/20'}`}>
+              {message.type === 'success' ? (
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                </svg>
+              ) : (
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              )}
+            </div>
+            <p className="text-sm font-medium">{message.text}</p>
+            <button onClick={() => setMessage({ type: "", text: "" })} className="ml-auto opacity-50 hover:opacity-100 transition">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+        )}
 
         <form onSubmit={save} className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
           {/* Left Panel */}

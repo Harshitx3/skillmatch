@@ -159,8 +159,8 @@ export default function BattleRoom() {
         }
     }
 
-    function copyInviteLink() {
-        navigator.clipboard.writeText(`${window.location.origin}/battle/${battle.inviteCode}`);
+    function copyInviteCode() {
+        navigator.clipboard.writeText(battle.inviteCode);
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
     }
@@ -295,8 +295,8 @@ export default function BattleRoom() {
                         <div className="text-xs text-gray-500 mb-0.5">Invite Code</div>
                         <div className="font-mono text-xl font-bold text-orange-400 tracking-widest">{battle?.inviteCode || "—"}</div>
                     </div>
-                    <button onClick={copyInviteLink} className="px-4 py-2 bg-orange-600/20 hover:bg-orange-600/40 text-orange-400 border border-orange-500/30 text-sm rounded-lg transition">
-                        {copied ? "✅ Copied!" : "📋 Copy Link"}
+                    <button onClick={copyInviteCode} className="px-4 py-2 bg-orange-600/20 hover:bg-orange-600/40 text-orange-400 border border-orange-500/30 text-sm rounded-lg transition">
+                        {copied ? "✅ Copied!" : "📋 Copy Code"}
                     </button>
                 </div>
             </div>
