@@ -380,6 +380,9 @@ function UserCard({ user, isRequestSent, isMatched }) {
       coding: "Coding Buddy",
       startup: "Startup Co-founder"
     };
+    if (Array.isArray(val)) {
+      return val.map(v => labels[v] || v).join(", ");
+    }
     return labels[val] || val;
   };
 

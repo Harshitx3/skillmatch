@@ -40,7 +40,7 @@ export default function Profile() {
     leetcodeUsername: "",
     linkedin: "",
     instagram: "",
-    lookingFor: "",
+    lookingFor: [],
     experienceLevel: "",
     avatar: ""
   });
@@ -67,6 +67,12 @@ export default function Profile() {
           if (Array.isArray(data.skills)) {
             data.skills = data.skills.join(", ");
           }
+          // Ensure lookingFor is an array
+          if (data.lookingFor && !Array.isArray(data.lookingFor)) {
+            data.lookingFor = [data.lookingFor];
+          } else if (!data.lookingFor) {
+            data.lookingFor = [];
+          }
           setForm(prev => ({
             ...prev,
             ...data,
@@ -77,7 +83,7 @@ export default function Profile() {
           // Check if profile is incomplete
           const hasIncompleteProfile = !data.college || !data.bio ||
             !data.skills || !data.githubUsername ||
-            !data.leetcodeUsername || !data.lookingFor || !data.experienceLevel;
+            !data.leetcodeUsername || !data.lookingFor || data.lookingFor.length === 0 || !data.experienceLevel;
           setIsNewUser(hasIncompleteProfile);
         }
       } catch (err) {
@@ -126,6 +132,11 @@ export default function Profile() {
 
     // Prepare skills as array
     const skillsArray = (form.skills || "").split(",").map(s => s.trim()).filter(Boolean);
+
+    if (!form.lookingFor || form.lookingFor.length === 0) {
+      setMessage({ type: "error", text: "Please select at least one option for 'Looking For'" });
+      return;
+    }
 
     const payload = {
       name: form.name,
@@ -515,15 +526,21 @@ export default function Profile() {
                         <label key={option.value} className="flex items-center gap-3 cursor-pointer group">
                           <div className="relative flex items-center justify-center w-5 h-5">
                             <input
-                              required
-                              type="radio"
+                              type="checkbox"
                               name="lookingFor"
                               value={option.value}
-                              checked={form.lookingFor === option.value}
-                              onChange={e => set("lookingFor", e.target.value)}
-                              className="peer appearance-none w-5 h-5 border border-gray-600 rounded-full checked:border-violet-500 focus:outline-none transition-colors cursor-pointer"
+                              checked={form.lookingFor?.includes(option.value)}
+                              onChange={e => {
+                                const updated = e.target.checked 
+                                  ? [...form.lookingFor, option.value]
+                                  : form.lookingFor.filter(v => v !== option.value);
+                                set("lookingFor", updated);
+                              }}
+                              className="peer appearance-none w-5 h-5 border border-gray-600 rounded-md checked:border-violet-500 checked:bg-violet-500/10 focus:outline-none transition-all cursor-pointer"
                             />
-                            <div className="absolute w-2.5 h-2.5 rounded-full bg-violet-500 scale-0 peer-checked:scale-100 transition-transform pointer-events-none" />
+                            <svg className="absolute w-3.5 h-3.5 text-violet-500 scale-0 peer-checked:scale-100 transition-transform pointer-events-none" fill="none" stroke="currentColor" strokeWidth="4" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                            </svg>
                           </div>
                           <span className="text-sm text-gray-300 group-hover:text-white transition-colors">{option.label}</span>
                         </label>
